@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NMCP - Sierra Leone App</title>
+    <style>
+        :root {
+            --primary: #11452a;
+            --accent: #c78b16;
+            --bg: #f4f7f6;
+            --card-bg: #ffffff;
+        }
+
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; }
+
+        .app-container { max-width: 400px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+        /* Header */
+        .header { text-align: center; margin-bottom: 20px; }
+        .header h1 { color: var(--primary); font-size: 1.2rem; }
+        .header h2 { font-size: 1rem; color: #333; margin: 5px 0; }
+        .header p { font-size: 0.8rem; color: #666; }
+
+        /* Tabs Section */
+        .tabs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
+        .tab-btn {
+            background: #f8f9f8;
+            border: 2px solid var(--primary);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .tab-btn:hover { background: var(--primary); color: white; }
+        .full-width { grid-column: span 2; }
+
+        /* Partners */
+        .partners-section { text-align: center; border-top: 2px solid #eee; padding-top: 20px; }
+        .partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
+        .partner-box { border: 1px solid #ddd; padding: 10px; border-radius: 10px; font-size: 0.7rem; }
+        .partner-box img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
+        .wide { grid-column: span 3; }
+
+        .footer { text-align: center; font-size: 0.75rem; margin-top: 20px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="header">
+        <h1>Ministry of Health</h1>
+        <h2>National Malaria Control Programme</h2>
+        <p>Sierra Leone</p>
+    </div>
+
+    <div class="tabs-grid">
+        <div class="tab-btn">Household Registration</div>
+        <div class="tab-btn">Distribution</div>
+        <div class="tab-btn">Dashboard</div>
+        <div class="tab-btn">ITN Movement</div>
+        <div class="tab-btn full-width">Reconciliation</div>
+    </div>
+
+    <div class="partners-section">
+        <h3>Implementing Partners</h3>
+        <div class="partners-grid">
+            <div class="partner-box"><img src="who_logo.png" alt="WHO">WHO</div>
+            <div class="partner-box"><img src="global_fund.png" alt="GF">Global Fund</div>
+            <div class="partner-box"><img src="nmcp_logo.png" alt="NMCP">NMCP</div>
+            <div class="partner-box wide"><img src="world_vision.png" alt="WV">World Vision</div>
+        </div>
+    </div>
+
+    <div class="footer">
+        Powered by ICF@2026 ITN-Mass Campaign 2026/2027
+    </div>
+</div>
+
+</body>
+</html>
