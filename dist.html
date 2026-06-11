@@ -1,1 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Distribution System</title>
+    <style>
+        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 20px; }
+        .card { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-weight: 600; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
+        button { background: #059669; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; }
+        .date-display { color: #064e3b; font-weight: bold; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
 
+<div id="loginSection" class="card">
+    <h2>Login</h2>
+    <div class="form-group">
+        <label>Enter Credentials</label>
+        <input type="password" id="password" placeholder="Password">
+    </div>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="distSection" class="card hidden">
+    <h2>Distribution</h2>
+    <div id="dateDisplay" class="date-display"></div>
+    
+    <div class="form-group">
+        <label>Cascading Location (District > Chiefdom > PHU > Community > Point)</label>
+        <select>
+            <option>Select Distribution Point...</option>
+        </select>
+    </div>
+    
+    <div class="form-group">
+        <label>Enter E-Token</label>
+        <input type="text" placeholder="Scan or type e-token">
+    </div>
+    
+    <button onclick="confirmDist()">Confirm Distribution</button>
+</div>
+
+<script>
+    function login() {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('distSection').classList.remove('hidden');
+        document.getElementById('dateDisplay').innerText = "Date: " + new Date().toLocaleDateString();
+    }
+
+    function confirmDist() {
+        alert("Distribution Confirmed");
+    }
+</script>
+
+</body>
+</html>
