@@ -25,13 +25,15 @@
         /* Tabs Section */
         .tabs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
         .tab-btn {
+            display: block;
             background: #f8f9f8;
             border: 2px solid var(--primary);
             padding: 15px;
             border-radius: 12px;
             text-align: center;
             font-weight: bold;
-            cursor: pointer;
+            color: #333;
+            text-decoration: none; /* Remove underline from links */
             transition: 0.3s;
         }
         .tab-btn:hover { background: var(--primary); color: white; }
@@ -57,11 +59,11 @@
     </div>
 
     <div class="tabs-grid">
-        <div class="tab-btn">Household Registration</div>
-        <div class="tab-btn">Distribution</div>
-        <div class="tab-btn">Dashboard</div>
-        <div class="tab-btn">ITN Movement</div>
-        <div class="tab-btn full-width">Reconciliation</div>
+        <a href="reg.html" class="tab-btn">Household Registration</a>
+        <a href="dist.html" class="tab-btn">Distribution</a>
+        <a href="dash.html" class="tab-btn">Dashboard</a>
+        <a href="itnmov.html" class="tab-btn">ITN Movement</a>
+        <a href="recc.html" class="tab-btn full-width">Reconciliation</a>
     </div>
 
     <div class="partners-section">
