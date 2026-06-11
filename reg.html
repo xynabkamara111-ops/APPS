@@ -7,6 +7,7 @@
         body { font-family: sans-serif; background: #f1f5f9; margin: 0; }
         header { background: #1e293b; color: white; padding: 1rem; text-align: center; }
         .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
         .tab-bar { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
         .tab { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab.active { border-bottom-color: #2563eb; color: #2563eb; font-weight: bold; }
@@ -24,35 +25,47 @@
 
 <header><h1>Household Registration</h1></header>
 
-<div class="container">
+<div id="loginView" class="container">
+    <h2>System Login</h2>
+    <div class="form-group"><label>Enter Login Credential </label>
+    <input type="password" id="password" placeholder="Password"></div>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="appView" class="container hidden">
     <div class="tab-bar">
-        <div class="tab active" onclick="switchTab('registration')">Registration Tab</div>
-        <div class="tab" onclick="switchTab('records')">Records Tab</div>
+        <div class="tab active" onclick="switchTab('registration')">Registration Tab [cite: 6]</div>
+        <div class="tab" onclick="switchTab('records')">Records Tab [cite: 22]</div>
     </div>
 
     <div id="registration" class="tab-content active">
         <form>
-            <div class="form-group"><label>Cascading Location</label><select><option>District > Chiefdom > PHU > Community</option></select></div>
-            <div class="form-group"><label>Surname of household head</label><input type="text"></div>
-            <div class="form-group"><label>First and other name of household head</label><input type="text"></div>
-            <div class="form-group"><label>Phone Number (9 digits)</label><input type="tel" pattern="[0-9]{9}"></div>
-            <div class="form-group"><label>Number of people in this household</label><input type="number"></div>
-            <div class="form-group"><label>How many under five children?</label><input type="number"></div>
-            <div class="form-group"><label>How many pregnant women?</label><input type="number"></div>
+            <div class="form-group"><label>Cascading Location (District, Chiefdom, PHU, Community) </label><select><option>Select Location</option></select></div>
+            <div class="form-group"><label>Surname of household head [cite: 8]</label><input type="text"></div>
+            <div class="form-group"><label>First and other name of household head [cite: 9]</label><input type="text"></div>
+            <div class="form-group"><label>Phone Number (9 digits) [cite: 10, 11]</label><input type="tel" pattern="[0-9]{9}"></div>
+            <div class="form-group"><label>Number of people in this household [cite: 12, 13]</label><input type="number"></div>
+            <div class="form-group"><label>How many under five children? [cite: 14]</label><input type="number"></div>
+            <div class="form-group"><label>How many pregnant women? [cite: 17]</label><input type="number"></div>
             <div id="gpsDisplay" class="gps-box">GPS: Not yet captured [cite: 20]</div>
             <button type="button" onclick="captureGPS()">Generate e-token [cite: 21]</button>
         </form>
     </div>
 
     <div id="records" class="tab-content">
-        <h3>Registered Households</h3>
-        <p>List of households registered from the Registration Tab[cite: 24, 25].</p>
-        </div>
+        <h3>Registered Households [cite: 24]</h3>
+        <p>List of households registered from the Registration Tab[cite: 25].</p>
+    </div>
 </div>
 
-<footer><p>System Login Credential Verified [cite: 4]</p></footer>
+<footer><p>System Login Credential Verified </p></footer>
 
 <script>
+    function login() {
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('appView').classList.remove('hidden');
+    }
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
         document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
