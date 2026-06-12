@@ -1,85 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Household Registration System</title>
-    <style>
-        body { font-family: sans-serif; background: #f1f5f9; margin: 0; }
-        header { background: #1e293b; color: white; padding: 1rem; text-align: center; }
-        .container { max-width: 600px; margin: 20px auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
-        .hidden { display: none; }
-        .tab-bar { display: flex; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
-        .tab { padding: 10px 20px; cursor: pointer; border-bottom: 3px solid transparent; }
-        .tab.active { border-bottom-color: #2563eb; color: #2563eb; font-weight: bold; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 0.85em; font-weight: 600; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid #cbd5e1; border-radius: 4px; box-sizing: border-box; }
-        .gps-box { background: #fffbeb; border: 1px solid #f59e0b; padding: 10px; margin: 15px 0; border-radius: 4px; font-size: 0.9em; }
-        button { background: #2563eb; color: white; border: none; padding: 12px; width: 100%; border-radius: 4px; cursor: pointer; }
-        footer { text-align: center; padding: 20px; color: #64748b; font-size: 0.8em; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>Household Registration - Full Records Display</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: radial-gradient(circle at 20% 30%, #0f2b3d, #071624);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, 'Segoe UI', -apple-system, 'Helvetica Neue', sans-serif;
+      padding: 20px;
+    }
+    .phone {
+      width: 375px;
+      height: 700px;
+      background-color: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(180, 200, 240, 0.15), 0 0 0 12px #0a1c2f;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .phone::before, .phone::after { display: none; }
+    .app-header { background-color: #0a2b4e; flex-shrink: 0; padding: 10px 12px; text-align: center; }
+    .ministry-text { color: white; font-weight: 700; font-size: 0.75rem; }
+    .program-text { color: white; font-weight: 600; font-size: 0.68rem; opacity: 0.9; }
+    .campaign-text { color: #ffd966; font-weight: 800; font-size: 0.7rem; }
+    .app-body { flex: 1; background-color: white; overflow-y: auto; padding: 16px; }
+    .tabs { display: flex; gap: 12px; margin-bottom: 20px; border-bottom: 2px solid #e2e8f0; padding-bottom: 8px; }
+    .tab-btn { background: none; border: none; padding: 8px 16px; font-size: 0.9rem; font-weight: 600; color: #64748b; cursor: pointer; border-radius: 20px; }
+    .tab-btn.active { background-color: #0a2b4e; color: white; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .section { background: #f8fafc; border-radius: 20px; padding: 14px; margin-bottom: 20px; border: 1px solid #e2e8f0; }
+    .section-title { font-size: 0.85rem; font-weight: 700; color: #0a2b4e; margin-bottom: 12px; padding-bottom: 6px; border-bottom: 2px solid #0a2b4e; display: inline-block; }
+    .form-group { margin-bottom: 14px; }
+    label { display: block; font-size: 0.7rem; font-weight: 600; color: #1e293b; margin-bottom: 4px; }
+    .required::after { content: " *"; color: #e53e3e; }
+    input, select { width: 100%; padding: 10px 12px; border: 1.5px solid #e2e8f0; border-radius: 12px; font-size: 0.85rem; outline: none; background: white; }
+    input:focus, select:focus { border-color: #0a2b4e; box-shadow: 0 0 0 3px rgba(10, 43, 78, 0.1); }
+    select:disabled { background-color: #f1f5f9; cursor: not-allowed; opacity: 0.7; }
+    .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    button { background-color: #0a2b4e; color: white; border: none; padding: 12px; border-radius: 40px; font-weight: 600; font-size: 0.9rem; cursor: pointer; width: 100%; transition: 0.2s; margin-top: 8px; }
+    button:active { transform: scale(0.97); }
+    .btn-warning { background-color: #d97706; }
+    .btn-success { background-color: #0f3b2c; }
+    .btn-secondary { background-color: #475569; }
+    .nets-info { background: #f0f9ff; padding: 10px; border-radius: 12px; font-size: 0.7rem; color: #0369a1; margin-top: 8px; }
+    .token-box { background: linear-gradient(135deg, #0a2b4e, #1e4a76); padding: 14px; border-radius: 16px; font-family: monospace; font-size: 0.85rem; word-break: break-all; margin-top: 12px; text-align: center; color: white; border: 1px solid #ffd966; }
+    .token-label { font-size: 0.7rem; opacity: 0.9; margin-bottom: 5px; }
+    .token-value { font-weight: 800; font-size: 1rem; }
+    .token-dp { font-size: 0.7rem; margin-top: 8px; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.3); }
+    .records-table { width: 100%; border-collapse: collapse; font-size: 0.7rem; }
+    .records-table th, .records-table td { padding: 10px 5px; text-align: left; border-bottom: 1px solid #e2e8f0; vertical-align: top; }
+    .records-table th { background-color: #f8fafc; font-weight: 600; position: sticky; top: 0; }
+    .synced { background-color: #e6f7e6; }
+    .pending { background-color: #fff3e0; }
+    .badge { padding: 3px 8px; border-radius: 20px; font-size: 0.65rem; font-weight: 600; display: inline-block; }
+    .badge-synced { background-color: #22c55e; color: white; }
+    .badge-pending { background-color: #f97316; color: white; }
+    .delete-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; padding: 4px 8px; width: auto; color: #ef4444; }
+    .app-footer { background-color: #0a2b4e; padding: 8px; text-align: center; flex-shrink: 0; }
+    .footer-text { color: white; font-size: 0.65rem; }
+    .gps-auto-note { font-size: 0.65rem; color: #0a2b4e; margin-top: 6px; text-align: center; background: #e6f0ff; padding: 6px; border-radius: 20px; }
+    .status-indicator { font-size: 0.65rem; margin-top: 8px; padding: 6px; border-radius: 12px; text-align: center; background: #fef9e3; }
+    .error-message { color: #e53e3e; font-size: 0.65rem; margin-top: 4px; display: block; }
+    .field-error { border-color: #e53e3e !important; }
+    .verification-badge { background: #e6f0ff; padding: 8px; border-radius: 12px; margin-top: 10px; font-size: 0.7rem; }
+    .review-panel { background: white; border-radius: 24px; padding: 16px; margin-bottom: 20px; border: 2px solid #0a2b4e; }
+    .review-title { font-size: 1rem; font-weight: 800; color: #0a2b4e; margin-bottom: 12px; text-align: center; }
+    .review-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #e2e8f0; font-size: 0.75rem; }
+    .review-label { font-weight: 600; color: #475569; width: 40%; }
+    .review-value { color: #1e293b; width: 60%; text-align: right; word-break: break-word; }
+    .action-buttons { display: flex; gap: 12px; margin-top: 16px; }
+    .action-buttons button { margin-top: 0; }
+    .distribution-card { background: #fef9e3; border-left: 4px solid #d97706; padding: 12px; border-radius: 16px; margin-top: 12px; }
+    .dist-label { font-size: 0.7rem; font-weight: 700; color: #92400e; }
+    .record-count { background: #0a2b4e; color: white; padding: 6px 12px; border-radius: 20px; font-size: 0.7rem; display: inline-block; margin-bottom: 12px; }
+    .empty-records { text-align: center; padding: 40px 20px; color: #94a3b8; font-size: 0.8rem; }
+  </style>
 </head>
 <body>
+<div class="phone">
+  <header class="app-header">
+    <div class="ministry-text">Ministry of Health</div>
+    <div class="program-text">National Malaria Control Program</div>
+    <div class="campaign-text">ITN Mass Campaign 2027</div>
+  </header>
 
-<header><h1>Household Registration</h1></header>
+  <main class="app-body">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="registration">Registration</button>
+      <button class="tab-btn" data-tab="records">Records</button>
+    </div>
 
-<div id="loginView" class="container">
-    <h2>System Login</h2>
-    <div class="form-group"><label>Enter Login Credential </label>
-    <input type="password" id="password" placeholder="Password"></div>
-    <button onclick="login()">Login</button>
+    <!-- Registration Tab -->
+    <div id="registration-tab" class="tab-content active">
+      <form id="registrationForm">
+        <div class="section">
+          <div class="section-title">📍 GEO LOCATION</div>
+          <div class="form-group"><label class="required">Registration Date</label><input type="date" id="registrationDate" required></div>
+          <div class="form-group"><label class="required">1. District</label><select id="district" required><option value="">-- Select District --</option></select></div>
+          <div class="form-group"><label class="required">2. Chiefdom</label><select id="chiefdom" required disabled><option value="">-- First select District --</option></select></div>
+          <div class="form-group"><label class="required">3. PHU</label><select id="phu" required disabled><option value="">-- First select Chiefdom --</option></select></div>
+          <div class="form-group"><label class="required">4. Community</label><select id="community" required disabled><option value="">-- First select PHU --</option></select></div>
+          <div class="form-group"><label class="required">5. Distribution Point (DP)</label><select id="distributionPoint" required disabled><option value="">-- First select Community --</option></select></div>
+          <div class="status-indicator" id="cascadeStatus">📍 Select District to begin</div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">🏠 HOUSEHOLD DETAILS</div>
+          <div class="form-group"><label class="required">Surname</label><input type="text" id="surname" required></div>
+          <div class="form-group"><label class="required">First name</label><input type="text" id="firstname" required></div>
+          <div class="form-group"><label class="required">Phone (9 digits)</label><input type="tel" id="phone" maxlength="9" placeholder="e.g., 76123456" required><small id="phoneError" style="color:#e53e3e; font-size:0.65rem;"></small></div>
+          <div class="form-group"><label class="required">Total people</label><input type="number" id="totalPeople" min="1" required></div>
+          <div class="row-2">
+            <div class="form-group"><label class="required">Children under 5</label><input type="number" id="underFive" min="0" required><span class="error-message" id="underFiveError"></span></div>
+            <div class="form-group"><label class="required">Pregnant women</label><input type="number" id="pregnantWomen" min="0" required><span class="error-message" id="pregnantError"></span></div>
+          </div>
+          <div class="form-group"><label>Nets to give out</label><input type="text" id="netsAllocated" readonly style="background:#f1f5f9; font-weight:bold;"><div class="nets-info">⚡ 1-2 people = 1 net | 3-4 people = 2 nets | 5+ people = 3 nets</div></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">👤 HHR VERIFICATION</div>
+          <div class="form-group"><label class="required">HHR Full Name</label><input type="text" id="hhrName" placeholder="Registrar's full name" required></div>
+          <div class="form-group"><label class="required">HHR Phone (9 digits)</label><input type="tel" id="hhrPhone" maxlength="9" placeholder="e.g., 76123456" required><small id="hhrPhoneError" style="color:#e53e3e; font-size:0.65rem;"></small></div>
+        </div>
+
+        <div class="section">
+          <div class="section-title">📱 e-TOKEN & DISTRIBUTION</div>
+          <div class="form-group">
+            <label>GPS Coordinates</label>
+            <div class="row-2"><input type="text" id="gpsLat" placeholder="Latitude" readonly style="background:#eef2ff;"><input type="text" id="gpsLng" placeholder="Longitude" readonly style="background:#eef2ff;"></div>
+            <div class="gps-auto-note">🌐 Auto-detected</div>
+          </div>
+          <button type="button" id="generateTokenBtn" style="background:#1e4a76;">🔐 Generate e-Token</button>
+          
+          <div id="distributionCard" style="display:none;" class="distribution-card">
+            <div class="dist-label">🎫 DISTRIBUTION CARD</div>
+            <div style="font-weight:800; font-size:0.9rem; margin:6px 0;" id="cardTokenValue">-</div>
+            <div style="font-size:0.7rem;" id="cardDPValue">Assigned DP: -</div>
+            <div style="font-size:0.65rem; margin-top:5px; color:#b45309;">🔐 Present this e-Token at distribution point</div>
+          </div>
+          <div id="tokenDisplay" style="display:none;"></div>
+        </div>
+
+        <button type="button" id="reviewBtn" class="btn-warning">📋 Review & Continue</button>
+      </form>
+    </div>
+
+    <!-- Review & Edit Page -->
+    <div id="review-tab" class="tab-content">
+      <div class="review-panel">
+        <div class="review-title">📋 VERIFY REGISTRATION DETAILS</div>
+        <div id="reviewContent"></div>
+        <div class="action-buttons">
+          <button id="backToEditBtn" class="btn-secondary">✏️ Edit Details</button>
+          <button id="confirmSaveBtn" class="btn-success">✅ Confirm & Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Records Tab - Displays ALL registered household data -->
+    <div id="records-tab" class="tab-content">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h3>📋 Registered Households</h3>
+        <div class="record-count" id="recordCount">0 records</div>
+      </div>
+      <div style="overflow-x: auto; max-height: 520px; overflow-y: auto;">
+        <table class="records-table" id="recordsTable">
+          <thead>
+            <tr style="position: sticky; top: 0; background: white;">
+              <th>Date</th><th>Head Name</th><th>District</th><th>Community</th><th>e-Token</th><th>DP</th><th>Nets</th><th>HHR</th><th>Status</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="recordsBody"></tbody>
+        </table>
+        <div id="emptyRecordsMsg" class="empty-records" style="display: none;">📭 No registered households yet. Fill the registration form to add records.</div>
+      </div>
+      <button id="syncPendingBtn" style="background:#0a2b4e; margin-top:15px;">🔄 Sync Pending Records</button>
+      <button id="exportDataBtn" style="background:#475569; margin-top:8px;">📤 Export All Data (Console)</button>
+    </div>
+  </main>
+  <footer class="app-footer"><div class="footer-text">ICF-SL@2027 | Powered by Zainab</div></footer>
 </div>
-
-<div id="appView" class="container hidden">
-    <div class="tab-bar">
-        <div class="tab active" onclick="switchTab('registration')">Registration Tab [cite: 6]</div>
-        <div class="tab" onclick="switchTab('records')">Records Tab [cite: 22]</div>
-    </div>
-
-    <div id="registration" class="tab-content active">
-        <form>
-            <div class="form-group"><label>Cascading Location (District, Chiefdom, PHU, Community) </label><select><option>Select Location</option></select></div>
-            <div class="form-group"><label>Surname of household head [cite: 8]</label><input type="text"></div>
-            <div class="form-group"><label>First and other name of household head [cite: 9]</label><input type="text"></div>
-            <div class="form-group"><label>Phone Number (9 digits) [cite: 10, 11]</label><input type="tel" pattern="[0-9]{9}"></div>
-            <div class="form-group"><label>Number of people in this household [cite: 12, 13]</label><input type="number"></div>
-            <div class="form-group"><label>How many under five children? [cite: 14]</label><input type="number"></div>
-            <div class="form-group"><label>How many pregnant women? [cite: 17]</label><input type="number"></div>
-            <div id="gpsDisplay" class="gps-box">GPS: Not yet captured [cite: 20]</div>
-            <button type="button" onclick="captureGPS()">Generate e-token [cite: 21]</button>
-        </form>
-    </div>
-
-    <div id="records" class="tab-content">
-        <h3>Registered Households [cite: 24]</h3>
-        <p>List of households registered from the Registration Tab[cite: 25].</p>
-    </div>
-</div>
-
-<footer><p>System Login Credential Verified </p></footer>
 
 <script>
-    function login() {
-        document.getElementById('loginView').classList.add('hidden');
-        document.getElementById('appView').classList.remove('hidden');
-    }
+  // ========== HIERARCHICAL DATA ==========
+  const geoData = {
+    "Western Area Urban": { chiefdoms: { "Central Freetown": { phus: { "PHU Central Clinic": { communities: { "Central Community": ["DP Central Market", "DP Cotton Tree"], "Brookfields": ["DP Brookfields Junction"], "Murray Town": ["DP Murray Town Center"] } }, "PHU King Harman Road": { communities: { "King Harman": ["DP King Harman Market"], "Sankoh Street": ["DP Sankoh Junction"] } } } }, "East Freetown": { phus: { "PHU Kissy": { communities: { "Kissy": ["DP Kissy Road"], "Calaba Town": ["DP Calaba Market"] } }, "PHU Kroo Bay": { communities: { "Kroo Bay": ["DP Kroo Bay Wharf"] } } } }, "West Freetown": { phus: { "PHU Aberdeen": { communities: { "Aberdeen": ["DP Aberdeen Bridge"], "Hill Station": ["DP Hill Station Plaza"] } }, "PHU Lumley": { communities: { "Lumley": ["DP Lumley Beach"] } } } } } },
+    "Bo": { chiefdoms: { "Bo Central": { phus: { "PHU Bo Government Hospital": { communities: { "Bo City Center": ["DP Bo Main Market"], "New London": ["DP New London Square"] } }, "PHU New London": { communities: { "Gewojama": ["DP Gewojama Market"] } } } }, "Kakua": { phus: { "PHU Kakua Clinic": { communities: { "Kakua Town": ["DP Kakua Junction"], "Baiima": ["DP Baiima Town"] } } } } } },
+    "Kenema": { chiefdoms: { "Kenema City": { phus: { "PHU Kenema General": { communities: { "Kenema Center": ["DP Kenema Market"], "Dauda Town": ["DP Dauda Junction"] } } } } } },
+    "Makeni": { chiefdoms: { "Makeni City": { phus: { "PHU Makeni Regional": { communities: { "Makeni Central": ["DP Makeni Main Market"], "Rokon": ["DP Rokon Depot"] } } } } } }
+  };
 
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
+  const districtSelect = document.getElementById('district');
+  const chiefdomSelect = document.getElementById('chiefdom');
+  const phuSelect = document.getElementById('phu');
+  const communitySelect = document.getElementById('community');
+  const dpSelect = document.getElementById('distributionPoint');
+  const cascadeStatus = document.getElementById('cascadeStatus');
+  const totalPeopleInput = document.getElementById('totalPeople');
+  const underFiveInput = document.getElementById('underFive');
+  const pregnantWomenInput = document.getElementById('pregnantWomen');
+  const underFiveError = document.getElementById('underFiveError');
+  const pregnantError = document.getElementById('pregnantError');
 
-    function captureGPS() {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition((pos) => {
-                document.getElementById('gpsDisplay').innerText = `GPS Captured: ${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`;
-            });
-        }
+  function validateUnderFive() { let t=parseInt(totalPeopleInput.value)||0, u=parseInt(underFiveInput.value)||0; if(t>0 && u>=t){ underFiveError.textContent=`Must be less than ${t}`; underFiveInput.classList.add('field-error'); return false; } else { underFiveError.textContent=''; underFiveInput.classList.remove('field-error'); return true; } }
+  function validatePregnant() { let t=parseInt(totalPeopleInput.value)||0, p=parseInt(pregnantWomenInput.value)||0; if(t>0 && p>t){ pregnantError.textContent=`Cannot exceed ${t}`; pregnantWomenInput.classList.add('field-error'); return false; } else { pregnantError.textContent=''; pregnantWomenInput.classList.remove('field-error'); return true; } }
+  totalPeopleInput.addEventListener('input', () => { validateUnderFive(); validatePregnant(); let p=parseInt(totalPeopleInput.value)||0; document.getElementById('netsAllocated').value = p<=2?1:p<=4?2:3; });
+  underFiveInput.addEventListener('input', validateUnderFive);
+  pregnantWomenInput.addEventListener('input', validatePregnant);
+
+  function populateDistricts() { districtSelect.innerHTML='<option value="">-- Select District --</option>'; for(let d in geoData){ let o=document.createElement('option'); o.value=d; o.textContent=d; districtSelect.appendChild(o); } }
+  function resetDownstream(lvl){ if(lvl<=2){ chiefdomSelect.innerHTML='<option value="">-- First select District --</option>'; chiefdomSelect.disabled=true; chiefdomSelect.value=''; } if(lvl<=3){ phuSelect.innerHTML='<option value="">-- First select Chiefdom --</option>'; phuSelect.disabled=true; phuSelect.value=''; } if(lvl<=4){ communitySelect.innerHTML='<option value="">-- First select PHU --</option>'; communitySelect.disabled=true; communitySelect.value=''; } if(lvl<=5){ dpSelect.innerHTML='<option value="">-- First select Community --</option>'; dpSelect.disabled=true; dpSelect.value=''; } }
+  function updateChiefdoms(){ let d=districtSelect.value; resetDownstream(2); if(d && geoData[d]){ chiefdomSelect.disabled=false; chiefdomSelect.innerHTML='<option value="">-- Select Chiefdom --</option>'; Object.keys(geoData[d].chiefdoms).forEach(c=>{let o=document.createElement('option'); o.value=c; o.textContent=c; chiefdomSelect.appendChild(o);}); cascadeStatus.innerHTML='✅ Select Chiefdom';} else { cascadeStatus.innerHTML='📍 Select District';} }
+  function updatePHU(){ let d=districtSelect.value, c=chiefdomSelect.value; resetDownstream(3); if(d && c && geoData[d]?.chiefdoms[c]){ phuSelect.disabled=false; phuSelect.innerHTML='<option value="">-- Select PHU --</option>'; Object.keys(geoData[d].chiefdoms[c].phus).forEach(p=>{let o=document.createElement('option'); o.value=p; o.textContent=p; phuSelect.appendChild(o);}); cascadeStatus.innerHTML='✅ Select PHU';} }
+  function updateCommunity(){ let d=districtSelect.value, c=chiefdomSelect.value, p=phuSelect.value; resetDownstream(4); if(d && c && p && geoData[d]?.chiefdoms[c]?.phus[p]){ communitySelect.disabled=false; communitySelect.innerHTML='<option value="">-- Select Community --</option>'; Object.keys(geoData[d].chiefdoms[c].phus[p].communities).forEach(cm=>{let o=document.createElement('option'); o.value=cm; o.textContent=cm; communitySelect.appendChild(o);}); cascadeStatus.innerHTML='✅ Select Community';} }
+  function updateDP(){ let d=districtSelect.value, c=chiefdomSelect.value, p=phuSelect.value, cm=communitySelect.value; resetDownstream(5); if(d && c && p && cm && geoData[d]?.chiefdoms[c]?.phus[p]?.communities[cm]){ dpSelect.disabled=false; dpSelect.innerHTML='<option value="">-- Select DP --</option>'; geoData[d].chiefdoms[c].phus[p].communities[cm].forEach(dp=>{let o=document.createElement('option'); o.value=dp; o.textContent=dp; dpSelect.appendChild(o);}); cascadeStatus.innerHTML='✅ Select DP';} }
+  districtSelect.addEventListener('change', updateChiefdoms);
+  chiefdomSelect.addEventListener('change', updatePHU);
+  phuSelect.addEventListener('change', updateCommunity);
+  communitySelect.addEventListener('change', updateDP);
+  populateDistricts();
+  document.getElementById('registrationDate').value = new Date().toISOString().split('T')[0];
+
+  let autoGpsSet=false;
+  function autoGPS(){ if("geolocation" in navigator && !autoGpsSet){ navigator.geolocation.getCurrentPosition(p=>{ document.getElementById('gpsLat').value=p.coords.latitude.toFixed(6); document.getElementById('gpsLng').value=p.coords.longitude.toFixed(6); autoGpsSet=true; },()=>{ document.getElementById('gpsLat').value="8.4844"; document.getElementById('gpsLng').value="-13.2344"; autoGpsSet=true; }); } else if(!autoGpsSet){ document.getElementById('gpsLat').value="8.4844"; document.getElementById('gpsLng').value="-13.2344"; autoGpsSet=true; } }
+  window.addEventListener('load', autoGPS);
+
+  function validatePhone(phone, errorId){ let regex=/^[0-9]{9}$/; let err=document.getElementById(errorId); if(!regex.test(phone)){ err.innerText='Exactly 9 digits required'; return false; } err.innerText=''; return true; }
+
+  function generateUniqueToken(surname, firstname, phone, district, chiefdom, dp) {
+    const cleanSurname = surname.substring(0, 4).toUpperCase();
+    const cleanFirst = firstname.substring(0, 3).toUpperCase();
+    const phoneLast4 = phone.slice(-4);
+    const districtCode = district.substring(0, 3).toUpperCase();
+    const chiefdomCode = chiefdom.substring(0, 3).toUpperCase();
+    const dpCode = dp.substring(0, 3).toUpperCase();
+    const timestamp = Date.now().toString().slice(-4);
+    return `${cleanSurname}${cleanFirst}-${phoneLast4}-${districtCode}${chiefdomCode}-${dpCode}${timestamp}`;
+  }
+
+  let currentTokenData = null;
+  const generateBtn = document.getElementById('generateTokenBtn');
+  const distributionCard = document.getElementById('distributionCard');
+  const cardTokenValue = document.getElementById('cardTokenValue');
+  const cardDPValue = document.getElementById('cardDPValue');
+  const tokenDisplayDiv = document.getElementById('tokenDisplay');
+
+  generateBtn.addEventListener('click', () => {
+    const surname = document.getElementById('surname')?.value.trim();
+    const firstname = document.getElementById('firstname')?.value.trim();
+    const phone = document.getElementById('phone')?.value.trim();
+    const district = districtSelect.value;
+    const chiefdom = chiefdomSelect.value;
+    const dp = dpSelect.value;
+    if (!surname || !firstname || !phone || !district || !chiefdom || !dp) {
+      alert("Please fill Surname, First name, Phone, District, Chiefdom, and Distribution Point");
+      return;
     }
+    if (!validatePhone(phone, 'phoneError')) return;
+    const uniqueToken = generateUniqueToken(surname, firstname, phone, district, chiefdom, dp);
+    currentTokenData = { token: uniqueToken, distributionPoint: dp };
+    cardTokenValue.innerText = uniqueToken;
+    cardDPValue.innerText = `Assigned DP: ${dp}`;
+    distributionCard.style.display = 'block';
+    tokenDisplayDiv.innerHTML = `<div class="token-label">🎫 e-TOKEN</div><div class="token-value">${uniqueToken}</div><div class="token-dp">📍 Assigned DP: ${dp}</div>`;
+    tokenDisplayDiv.style.display = 'block';
+    cascadeStatus.innerHTML = '✅ e-Token generated. Distribution card ready.';
+  });
+
+  // REVIEW PAGE LOGIC
+  const reviewBtn = document.getElementById('reviewBtn');
+  const backToEditBtn = document.getElementById('backToEditBtn');
+  const confirmSaveBtn = document.getElementById('confirmSaveBtn');
+  const registrationTab = document.getElementById('registration-tab');
+  const reviewTab = document.getElementById('review-tab');
+  const tabBtns = document.querySelectorAll('.tab-btn');
+
+  function showReviewTab() { tabBtns.forEach(btn=>btn.classList.remove('active')); document.querySelector('[data-tab="registration"]').classList.remove('active'); registrationTab.classList.remove('active'); reviewTab.classList.add('active'); }
+  function showRegistrationTab() { tabBtns.forEach(btn=>btn.classList.remove('active')); document.querySelector('[data-tab="registration"]').classList.add('active'); registrationTab.classList.add('active'); reviewTab.classList.remove('active'); }
+
+  function buildReviewContent() {
+    const date = document.getElementById('registrationDate').value;
+    const district = districtSelect.options[districtSelect.selectedIndex]?.text;
+    const chiefdom = chiefdomSelect.options[chiefdomSelect.selectedIndex]?.text;
+    const phu = phuSelect.options[phuSelect.selectedIndex]?.text;
+    const community = communitySelect.options[communitySelect.selectedIndex]?.text;
+    const dp = dpSelect.options[dpSelect.selectedIndex]?.text;
+    const surname = document.getElementById('surname').value.trim();
+    const firstname = document.getElementById('firstname').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const totalPeople = document.getElementById('totalPeople').value;
+    const underFive = document.getElementById('underFive').value;
+    const pregnant = document.getElementById('pregnantWomen').value;
+    const nets = document.getElementById('netsAllocated').value;
+    const gpsLat = document.getElementById('gpsLat').value;
+    const gpsLng = document.getElementById('gpsLng').value;
+    const hhrName = document.getElementById('hhrName').value.trim();
+    const hhrPhone = document.getElementById('hhrPhone').value.trim();
+    const token = currentTokenData?.token || 'Not generated';
+    const assignedDP = currentTokenData?.distributionPoint || '-';
+    return `<div class="review-row"><span class="review-label">Date:</span><span class="review-value">${date}</span></div>
+      <div class="review-row"><span class="review-label">District:</span><span class="review-value">${district||'-'}</span></div><div class="review-row"><span class="review-label">Chiefdom:</span><span class="review-value">${chiefdom||'-'}</span></div>
+      <div class="review-row"><span class="review-label">PHU:</span><span class="review-value">${phu||'-'}</span></div><div class="review-row"><span class="review-label">Community:</span><span class="review-value">${community||'-'}</span></div>
+      <div class="review-row"><span class="review-label">DP:</span><span class="review-value">${dp||'-'}</span></div><div class="review-row"><span class="review-label">Head:</span><span class="review-value">${surname} ${firstname}</span></div>
+      <div class="review-row"><span class="review-label">Phone:</span><span class="review-value">${phone}</span></div><div class="review-row"><span class="review-label">Total/Under5/Preg:</span><span class="review-value">${totalPeople}/${underFive}/${pregnant}</span></div>
+      <div class="review-row"><span class="review-label">Nets:</span><span class="review-value">${nets}</span></div><div class="review-row"><span class="review-label">e-Token:</span><span class="review-value"><strong>${token}</strong></span></div>
+      <div class="review-row"><span class="review-label">Assigned DP:</span><span class="review-value"><strong>${assignedDP}</strong></span></div>
+      <div class="review-row"><span class="review-label">HHR:</span><span class="review-value">${hhrName} (${hhrPhone})</span></div>`;
+  }
+
+  reviewBtn.addEventListener('click', () => {
+    const date = document.getElementById('registrationDate').value;
+    const district = districtSelect.value, chiefdom = chiefdomSelect.value, phu = phuSelect.value, community = communitySelect.value, dp = dpSelect.value;
+    const surname = document.getElementById('surname').value.trim(), firstname = document.getElementById('firstname').value.trim(), phone = document.getElementById('phone').value.trim();
+    const totalPeople = document.getElementById('totalPeople').value, hhrName = document.getElementById('hhrName').value.trim(), hhrPhone = document.getElementById('hhrPhone').value.trim();
+    if (!date || !district || !chiefdom || !phu || !community || !dp || !surname || !firstname || !phone || !totalPeople || !hhrName || !hhrPhone) { alert("Please fill all required fields."); return; }
+    if (!validatePhone(phone, 'phoneError') || !validatePhone(hhrPhone, 'hhrPhoneError') || !validateUnderFive() || !validatePregnant()) return;
+    if (!currentTokenData) { alert("Generate e-Token first."); return; }
+    document.getElementById('reviewContent').innerHTML = buildReviewContent();
+    showReviewTab();
+  });
+
+  backToEditBtn.addEventListener('click', showRegistrationTab);
+
+  // RECORDS MANAGEMENT - DISPLAYS ALL DATA ON DEVICE
+  let records = [];
+  function loadRecords() { const s=localStorage.getItem('hh_records_full_device'); if(s) records=JSON.parse(s); else records=[]; renderRecords(); }
+  function saveRecords() { localStorage.setItem('hh_records_full_device', JSON.stringify(records)); renderRecords(); }
+  function renderRecords() {
+    const tbody = document.getElementById('recordsBody');
+    const emptyMsg = document.getElementById('emptyRecordsMsg');
+    const recordCountSpan = document.getElementById('recordCount');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    if (records.length === 0) {
+      if(emptyMsg) emptyMsg.style.display = 'block';
+      if(recordCountSpan) recordCountSpan.innerText = '0 records';
+      return;
+    }
+    if(emptyMsg) emptyMsg.style.display = 'none';
+    if(recordCountSpan) recordCountSpan.innerText = `${records.length} record${records.length!==1?'s':''}`;
+    records.slice().reverse().forEach(rec => {
+      const row = tbody.insertRow();
+      row.className = rec.status === 'synced' ? 'synced' : 'pending';
+      row.insertCell(0).innerText = rec.date;
+      row.insertCell(1).innerText = `${rec.surname} ${rec.firstname}`;
+      row.insertCell(2).innerText = rec.district;
+      row.insertCell(3).innerText = rec.community;
+      row.insertCell(4).innerHTML = `<span style="font-family:monospace; font-size:0.65rem; word-break:break-all;">${rec.token}</span>`;
+      row.insertCell(5).innerText = rec.distributionPoint;
+      row.insertCell(6).innerText = rec.nets;
+      row.insertCell(7).innerText = rec.hhrName;
+      row.insertCell(8).innerHTML = `<span class="badge ${rec.status==='synced'?'badge-synced':'badge-pending'}">${rec.status.toUpperCase()}</span>`;
+      const delCell = row.insertCell(9);
+      const delBtn = document.createElement('button'); delBtn.innerText = '🗑️'; delBtn.className = 'delete-btn';
+      delBtn.onclick = () => { if(confirm('Delete this record?')){ records = records.filter(r=>r.id!==rec.id); saveRecords(); } };
+      delCell.appendChild(delBtn);
+    });
+  }
+
+  confirmSaveBtn.addEventListener('click', () => {
+    const date = document.getElementById('registrationDate').value;
+    const district = districtSelect.value, chiefdom = chiefdomSelect.value, phu = phuSelect.value, community = communitySelect.value, dp = dpSelect.value;
+    const surname = document.getElementById('surname').value.trim(), firstname = document.getElementById('firstname').value.trim(), phone = document.getElementById('phone').value.trim();
+    const totalPeople = parseInt(document.getElementById('totalPeople').value);
+    const underFive = parseInt(document.getElementById('underFive').value)||0, pregnant = parseInt(document.getElementById('pregnantWomen').value)||0;
+    const nets = document.getElementById('netsAllocated').value, gpsLat = document.getElementById('gpsLat').value, gpsLng = document.getElementById('gpsLng').value;
+    const hhrName = document.getElementById('hhrName').value.trim(), hhrPhone = document.getElementById('hhrPhone').value.trim();
+    if (!currentTokenData) { alert("Missing e-Token"); return; }
+    const newRecord = { id: Date.now(), date, district, chiefdom, phu, community, distributionPoint: dp, surname, firstname, phone, totalPeople, underFive, pregnant, nets: parseInt(nets), gpsLat, gpsLng, token: currentTokenData.token, hhrName, hhrPhone, status: "pending" };
+    records.unshift(newRecord); saveRecords();
+    alert("Registration saved! View all data in Records tab.");
+    document.getElementById('registrationForm').reset();
+    document.getElementById('registrationDate').value = new Date().toISOString().split('T')[0];
+    document.getElementById('netsAllocated').value = '';
+    tokenDisplayDiv.style.display = 'none';
+    distributionCard.style.display = 'none';
+    currentTokenData = null;
+    autoGpsSet=false; autoGPS();
+    resetDownstream(2); districtSelect.value=""; updateChiefdoms();
+    underFiveError.textContent=''; pregnantError.textContent='';
+    document.getElementById('phoneError').innerText=''; document.getElementById('hhrPhoneError').innerText='';
+    showRegistrationTab();
+    // Switch to records tab to show updated data
+    document.querySelector('[data-tab="records"]').click();
+  });
+
+  document.getElementById('syncPendingBtn')?.addEventListener('click',()=>{
+    let changed=false;
+    records=records.map(r=>{ if(r.status==='pending'){ changed=true; return {...r, status:'synced'}; } return r; });
+    if(changed){ saveRecords(); alert("Pending records synced."); } else alert("No pending records.");
+  });
+
+  document.getElementById('exportDataBtn')?.addEventListener('click',()=>{
+    console.log("=== ALL REGISTERED HOUSEHOLDS ===");
+    console.log(JSON.stringify(records, null, 2));
+    alert(`Exported ${records.length} records to console. Open browser console (F12) to view full data.`);
+  });
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const id=btn.getAttribute('data-tab');
+      document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+      if(id==='registration') document.getElementById('registration-tab').classList.add('active');
+      if(id==='records') { document.getElementById('records-tab').classList.add('active'); renderRecords(); }
+      if(id==='review') document.getElementById('review-tab')?.classList.add('active');
+    });
+  });
+
+  loadRecords();
 </script>
 </body>
 </html>
