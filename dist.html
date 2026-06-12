@@ -2,59 +2,922 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Distribution System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>Distribution System - ITN Campaign</title>
     <style>
-        body { font-family: sans-serif; background: #f0fdf4; margin: 0; padding: 20px; }
-        .card { max-width: 500px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .hidden { display: none; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: 600; margin-bottom: 5px; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #d1d5db; border-radius: 6px; box-sizing: border-box; }
-        button { background: #059669; color: white; border: none; padding: 14px; width: 100%; border-radius: 6px; cursor: pointer; }
-        .date-display { color: #064e3b; font-weight: bold; margin-bottom: 15px; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: system-ui, 'Segoe UI', -apple-system, 'Helvetica Neue', sans-serif;
+            background: radial-gradient(circle at 20% 30%, #0f2b3d, #071624);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Phone shape view */
+        .phone {
+            width: 375px;
+            height: 700px;
+            background-color: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(180, 200, 240, 0.15), 0 0 0 12px #0a1c2f;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .phone::before,
+        .phone::after {
+            display: none;
+            content: none;
+        }
+
+        /* Header - No images, only text */
+        .app-header {
+            background-color: #0a2b4e;
+            flex-shrink: 0;
+            width: 100%;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 4px;
+        }
+
+        .ministry-text {
+            color: white;
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.3px;
+        }
+
+        .program-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.75rem;
+            opacity: 0.9;
+        }
+
+        .campaign-text {
+            color: #ffd966;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border-radius: 20px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            background-color: #0a2b4e;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Main content */
+        .app-body {
+            flex: 1;
+            background-color: white;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        h2 {
+            color: #0a2b4e;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #0a2b4e;
+            font-size: 1rem;
+            margin-bottom: 12px;
+        }
+
+        /* Section styling */
+        .section {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 14px;
+            margin-bottom: 20px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0a2b4e;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0a2b4e;
+            display: inline-block;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #1e293b;
+            margin-bottom: 6px;
+        }
+
+        .required::after {
+            content: " *";
+            color: #e53e3e;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            outline: none;
+            transition: 0.2s;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            border-color: #0a2b4e;
+            box-shadow: 0 0 0 3px rgba(10, 43, 78, 0.1);
+        }
+
+        button {
+            background-color: #0a2b4e;
+            color: white;
+            border: none;
+            padding: 14px;
+            width: 100%;
+            border-radius: 40px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .token-info {
+            background: #fef9e3;
+            border-left: 4px solid #d97706;
+            padding: 12px;
+            border-radius: 12px;
+            margin-top: 15px;
+            font-size: 0.75rem;
+        }
+
+        .token-valid {
+            background: #dcfce7;
+            border-left-color: #22c55e;
+        }
+
+        .token-invalid {
+            background: #fee2e2;
+            border-left-color: #ef4444;
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            color: #b91c1c;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .success-message {
+            background-color: #dcfce7;
+            color: #166534;
+            padding: 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            margin-top: 12px;
+            text-align: center;
+            display: none;
+        }
+
+        .household-details {
+            background: #f1f5f9;
+            padding: 12px;
+            border-radius: 16px;
+            margin-top: 15px;
+            font-size: 0.75rem;
+        }
+
+        .household-details p {
+            margin: 5px 0;
+        }
+
+        .verification-badge {
+            background: #e6f0ff;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 10px;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #0a2b4e;
+        }
+
+        /* Records Table */
+        .records-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+        }
+
+        .records-table th, .records-table td {
+            padding: 10px 5px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            vertical-align: top;
+        }
+
+        .records-table th {
+            background-color: #f8fafc;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+
+        .badge {
+            padding: 3px 8px;
+            border-radius: 20px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .badge-distributed {
+            background-color: #22c55e;
+            color: white;
+        }
+
+        .record-count {
+            background: #0a2b4e;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin-bottom: 12px;
+        }
+
+        .empty-records {
+            text-align: center;
+            padding: 40px 20px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+
+        .footer {
+            background-color: #0a2b4e;
+            padding: 10px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .footer-text {
+            color: white;
+            font-size: 0.65rem;
+        }
+
+        @media (max-width: 420px) {
+            .phone {
+                width: 100%;
+                height: 95vh;
+                max-width: 380px;
+                border-radius: 40px;
+            }
+            .app-body {
+                padding: 16px;
+            }
+            .ministry-text {
+                font-size: 0.75rem;
+            }
+            .program-text {
+                font-size: 0.68rem;
+            }
+            .campaign-text {
+                font-size: 0.72rem;
+            }
+        }
     </style>
 </head>
 <body>
+<div class="phone">
+    <!-- Header - Text Only, No Images -->
+    <header class="app-header">
+        <div class="ministry-text">Ministry of Health</div>
+        <div class="program-text">National Malaria Control Program</div>
+        <div class="campaign-text">ITN Mass Campaign 2027</div>
+    </header>
 
-<div id="loginSection" class="card">
-    <h2>Login</h2>
-    <div class="form-group">
-        <label>Enter Credentials</label>
-        <input type="password" id="password" placeholder="Password">
-    </div>
-    <button onclick="login()">Login</button>
-</div>
+    <main class="app-body">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="distribution">📦 ITN Distribution</button>
+            <button class="tab-btn" data-tab="records">📋 Records</button>
+        </div>
 
-<div id="distSection" class="card hidden">
-    <h2>Distribution</h2>
-    <div id="dateDisplay" class="date-display"></div>
-    
-    <div class="form-group">
-        <label>Cascading Location (District > Chiefdom > PHU > Community > Point)</label>
-        <select>
-            <option>Select Distribution Point...</option>
-        </select>
-    </div>
-    
-    <div class="form-group">
-        <label>Enter E-Token</label>
-        <input type="text" placeholder="Scan or type e-token">
-    </div>
-    
-    <button onclick="confirmDist()">Confirm Distribution</button>
+        <!-- Distribution Tab -->
+        <div id="distribution-tab" class="tab-content active">
+            <div class="card">
+                <h2>📦 ITN Distribution</h2>
+                
+                <!-- GEO LOCATION SECTION with Date -->
+                <div class="section">
+                    <div class="section-title">📍 GEO LOCATION</div>
+                    
+                    <div class="form-group">
+                        <label class="required">Distribution Date</label>
+                        <input type="date" id="distributionDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">District</label>
+                        <select id="districtSelect">
+                            <option value="">-- Select District --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Chiefdom</label>
+                        <select id="chiefdomSelect" disabled>
+                            <option value="">-- First select District --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">PHU</label>
+                        <select id="phuSelect" disabled>
+                            <option value="">-- First select Chiefdom --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Community</label>
+                        <select id="communitySelect" disabled>
+                            <option value="">-- First select PHU --</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Distribution Point (DP)</label>
+                        <select id="locationSelect" disabled>
+                            <option value="">-- First select Community --</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- E-TOKEN VERIFICATION Section -->
+                <div class="section">
+                    <div class="section-title">🎫 E-TOKEN VERIFICATION</div>
+                    
+                    <div class="form-group">
+                        <label class="required">Enter / Scan e-Token</label>
+                        <input type="text" id="etokenInput" placeholder="Enter the e-Token from registration">
+                    </div>
+
+                    <div id="tokenValidationResult"></div>
+                    <div id="householdDetails" class="household-details" style="display:none;"></div>
+                </div>
+
+                <!-- ITN DISTRIBUTOR VERIFICATION Section (ID field removed) -->
+                <div class="section">
+                    <div class="section-title">👤 ITN DISTRIBUTOR VERIFICATION</div>
+                    
+                    <div class="form-group">
+                        <label class="required">Distributor Full Name</label>
+                        <input type="text" id="distributorName" placeholder="Enter full name of distributor" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="required">Distributor Phone Number (9 digits)</label>
+                        <input type="tel" id="distributorPhone" maxlength="9" placeholder="e.g., 76123456" required>
+                        <small id="distributorPhoneError" style="color:#e53e3e; font-size:0.65rem; display:block; margin-top:4px;"></small>
+                    </div>
+                    
+                    <div class="verification-badge">
+                        🔐 Distributor information will be recorded for audit trail
+                    </div>
+                </div>
+
+                <div id="errorMsg" class="error-message"></div>
+                <div id="successMsg" class="success-message"></div>
+
+                <button onclick="confirmDist()" id="confirmBtn" disabled>✅ Confirm Distribution</button>
+            </div>
+        </div>
+
+        <!-- Records Tab -->
+        <div id="records-tab" class="tab-content">
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <h3>📋 Distributed Households</h3>
+                    <div class="record-count" id="recordCount">0 records</div>
+                </div>
+                <div style="overflow-x: auto; max-height: 520px; overflow-y: auto;">
+                    <table class="records-table" id="recordsTable">
+                        <thead>
+                            <tr style="position: sticky; top: 0; background: white;">
+                                <th>Date</th><th>Head Name</th><th>District</th><th>Community</th><th>Nets</th><th>e-Token</th><th>Distributor</th><th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="recordsBody"></tbody>
+                    </table>
+                    <div id="emptyRecordsMsg" class="empty-records" style="display: none;">📭 No distributed records yet. Complete a distribution to see records here.</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-text">ICF-SL@2027 | Powered by Zainab</div>
+    </footer>
 </div>
 
 <script>
-    function login() {
-        document.getElementById('loginSection').classList.add('hidden');
-        document.getElementById('distSection').classList.remove('hidden');
-        document.getElementById('dateDisplay').innerText = "Date: " + new Date().toLocaleDateString();
+    // ========== HIERARCHICAL DATA FOR CASCADING ==========
+    const geoData = {
+        "Western Area Urban": {
+            chiefdoms: {
+                "Central Freetown": {
+                    phus: {
+                        "PHU Central Clinic": {
+                            communities: {
+                                "Central Community": ["DP Central Market", "DP Cotton Tree"],
+                                "Brookfields": ["DP Brookfields Junction"],
+                                "Murray Town": ["DP Murray Town Center"]
+                            }
+                        },
+                        "PHU King Harman Road": {
+                            communities: {
+                                "King Harman": ["DP King Harman Market"],
+                                "Sankoh Street": ["DP Sankoh Junction"]
+                            }
+                        }
+                    }
+                },
+                "East Freetown": {
+                    phus: {
+                        "PHU Kissy": {
+                            communities: {
+                                "Kissy": ["DP Kissy Road"],
+                                "Calaba Town": ["DP Calaba Market"]
+                            }
+                        },
+                        "PHU Kroo Bay": {
+                            communities: {
+                                "Kroo Bay": ["DP Kroo Bay Wharf"]
+                            }
+                        }
+                    }
+                },
+                "West Freetown": {
+                    phus: {
+                        "PHU Aberdeen": {
+                            communities: {
+                                "Aberdeen": ["DP Aberdeen Bridge"],
+                                "Hill Station": ["DP Hill Station Plaza"]
+                            }
+                        },
+                        "PHU Lumley": {
+                            communities: {
+                                "Lumley": ["DP Lumley Beach"]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Bo": {
+            chiefdoms: {
+                "Bo Central": {
+                    phus: {
+                        "PHU Bo Government Hospital": {
+                            communities: {
+                                "Bo City Center": ["DP Bo Main Market"],
+                                "New London": ["DP New London Square"]
+                            }
+                        },
+                        "PHU New London": {
+                            communities: {
+                                "Gewojama": ["DP Gewojama Market"]
+                            }
+                        }
+                    }
+                },
+                "Kakua": {
+                    phus: {
+                        "PHU Kakua Clinic": {
+                            communities: {
+                                "Kakua Town": ["DP Kakua Junction"],
+                                "Baiima": ["DP Baiima Town"]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Kenema": {
+            chiefdoms: {
+                "Kenema City": {
+                    phus: {
+                        "PHU Kenema General": {
+                            communities: {
+                                "Kenema Center": ["DP Kenema Market"],
+                                "Dauda Town": ["DP Dauda Junction"]
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "Makeni": {
+            chiefdoms: {
+                "Makeni City": {
+                    phus: {
+                        "PHU Makeni Regional": {
+                            communities: {
+                                "Makeni Central": ["DP Makeni Main Market"],
+                                "Rokon": ["DP Rokon Depot"]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    // DOM Elements for Cascading
+    const districtSelect = document.getElementById('districtSelect');
+    const chiefdomSelect = document.getElementById('chiefdomSelect');
+    const phuSelect = document.getElementById('phuSelect');
+    const communitySelect = document.getElementById('communitySelect');
+    const locationSelect = document.getElementById('locationSelect');
+
+    function populateDistricts() {
+        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+        for (const district in geoData) {
+            const option = document.createElement('option');
+            option.value = district;
+            option.textContent = district;
+            districtSelect.appendChild(option);
+        }
+    }
+
+    function resetDownstream(startLevel) {
+        if (startLevel <= 2) {
+            chiefdomSelect.innerHTML = '<option value="">-- First select District --</option>';
+            chiefdomSelect.disabled = true;
+            chiefdomSelect.value = "";
+        }
+        if (startLevel <= 3) {
+            phuSelect.innerHTML = '<option value="">-- First select Chiefdom --</option>';
+            phuSelect.disabled = true;
+            phuSelect.value = "";
+        }
+        if (startLevel <= 4) {
+            communitySelect.innerHTML = '<option value="">-- First select PHU --</option>';
+            communitySelect.disabled = true;
+            communitySelect.value = "";
+        }
+        if (startLevel <= 5) {
+            locationSelect.innerHTML = '<option value="">-- First select Community --</option>';
+            locationSelect.disabled = true;
+            locationSelect.value = "";
+        }
+    }
+
+    function updateChiefdoms() {
+        const selectedDistrict = districtSelect.value;
+        resetDownstream(2);
+        if (selectedDistrict && geoData[selectedDistrict]) {
+            chiefdomSelect.disabled = false;
+            chiefdomSelect.innerHTML = '<option value="">-- Select Chiefdom --</option>';
+            Object.keys(geoData[selectedDistrict].chiefdoms).forEach(chiefdom => {
+                const option = document.createElement('option');
+                option.value = chiefdom;
+                option.textContent = chiefdom;
+                chiefdomSelect.appendChild(option);
+            });
+        }
+    }
+
+    function updatePHU() {
+        const selectedDistrict = districtSelect.value;
+        const selectedChiefdom = chiefdomSelect.value;
+        resetDownstream(3);
+        if (selectedDistrict && selectedChiefdom && geoData[selectedDistrict]?.chiefdoms[selectedChiefdom]) {
+            phuSelect.disabled = false;
+            phuSelect.innerHTML = '<option value="">-- Select PHU --</option>';
+            Object.keys(geoData[selectedDistrict].chiefdoms[selectedChiefdom].phus).forEach(phu => {
+                const option = document.createElement('option');
+                option.value = phu;
+                option.textContent = phu;
+                phuSelect.appendChild(option);
+            });
+        }
+    }
+
+    function updateCommunity() {
+        const selectedDistrict = districtSelect.value;
+        const selectedChiefdom = chiefdomSelect.value;
+        const selectedPHU = phuSelect.value;
+        resetDownstream(4);
+        if (selectedDistrict && selectedChiefdom && selectedPHU && geoData[selectedDistrict]?.chiefdoms[selectedChiefdom]?.phus[selectedPHU]) {
+            communitySelect.disabled = false;
+            communitySelect.innerHTML = '<option value="">-- Select Community --</option>';
+            Object.keys(geoData[selectedDistrict].chiefdoms[selectedChiefdom].phus[selectedPHU].communities).forEach(community => {
+                const option = document.createElement('option');
+                option.value = community;
+                option.textContent = community;
+                communitySelect.appendChild(option);
+            });
+        }
+    }
+
+    function updateDistributionPoint() {
+        const selectedDistrict = districtSelect.value;
+        const selectedChiefdom = chiefdomSelect.value;
+        const selectedPHU = phuSelect.value;
+        const selectedCommunity = communitySelect.value;
+        resetDownstream(5);
+        if (selectedDistrict && selectedChiefdom && selectedPHU && selectedCommunity && geoData[selectedDistrict]?.chiefdoms[selectedChiefdom]?.phus[selectedPHU]?.communities[selectedCommunity]) {
+            locationSelect.disabled = false;
+            locationSelect.innerHTML = '<option value="">-- Select Distribution Point --</option>';
+            geoData[selectedDistrict].chiefdoms[selectedChiefdom].phus[selectedPHU].communities[selectedCommunity].forEach(dp => {
+                const option = document.createElement('option');
+                option.value = dp;
+                option.textContent = dp;
+                locationSelect.appendChild(option);
+            });
+        }
+    }
+
+    districtSelect.addEventListener('change', updateChiefdoms);
+    chiefdomSelect.addEventListener('change', updatePHU);
+    phuSelect.addEventListener('change', updateCommunity);
+    communitySelect.addEventListener('change', updateDistributionPoint);
+    populateDistricts();
+
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('distributionDate').value = today;
+
+    // ========== LOAD REGISTERED HOUSEHOLDS ==========
+    function loadRegisteredHouseholds() {
+        const stored = localStorage.getItem('hh_records_full_device');
+        if (stored) return JSON.parse(stored);
+        return [];
+    }
+
+    function getDemoHouseholds() {
+        return [
+            { id: 1001, date: "2024-01-15", district: "Western Area Urban", chiefdom: "Central Freetown", phu: "PHU Central Clinic", community: "Central Community", distributionPoint: "DP Central Market", surname: "Koroma", firstname: "John", phone: "76123456", totalPeople: 4, underFive: 1, pregnantWomen: 0, nets: 2, token: "KOROJOH-3456-WEACE-DPCM1234", status: "pending", hhrName: "Fatmata Sesay", hhrPhone: "76123457" },
+            { id: 1002, date: "2024-01-16", district: "Bo", chiefdom: "Bo Central", phu: "PHU Bo Government Hospital", community: "Bo City Center", distributionPoint: "DP Bo Main Market", surname: "Sesay", firstname: "Fatmata", phone: "78901234", totalPeople: 6, underFive: 2, pregnantWomen: 1, nets: 3, token: "SESFAT-1234-BOCEN-DPBOM5678", status: "pending", hhrName: "Mohamed Bangura", hhrPhone: "78123456" }
+        ];
+    }
+
+    function getAllHouseholds() {
+        let households = loadRegisteredHouseholds();
+        if (!households || households.length === 0) {
+            households = getDemoHouseholds();
+            localStorage.setItem('hh_records_full_device', JSON.stringify(households));
+        }
+        return households;
+    }
+
+    function validateDistributorPhone(phone) {
+        const phoneRegex = /^[0-9]{9}$/;
+        const errorSpan = document.getElementById('distributorPhoneError');
+        if (!phoneRegex.test(phone)) {
+            errorSpan.innerText = 'Phone must be exactly 9 digits (0-9)';
+            return false;
+        }
+        errorSpan.innerText = '';
+        return true;
+    }
+
+    let currentValidHousehold = null;
+
+    function validateEToken() {
+        const etoken = document.getElementById('etokenInput').value.trim();
+        const selectedDP = locationSelect.value;
+        const errorMsgDiv = document.getElementById('errorMsg');
+        const tokenValidationDiv = document.getElementById('tokenValidationResult');
+        const householdDetailsDiv = document.getElementById('householdDetails');
+        const confirmBtn = document.getElementById('confirmBtn');
+        
+        errorMsgDiv.style.display = 'none';
+        tokenValidationDiv.innerHTML = '';
+        householdDetailsDiv.style.display = 'none';
+        currentValidHousehold = null;
+        confirmBtn.disabled = true;
+        
+        if (!etoken) return;
+        if (!selectedDP) {
+            errorMsgDiv.textContent = "❌ Please select a Distribution Point first";
+            errorMsgDiv.style.display = 'block';
+            return;
+        }
+        
+        const households = getAllHouseholds();
+        const matchedHousehold = households.find(hh => hh.token === etoken && hh.distributionPoint === selectedDP);
+        
+        if (matchedHousehold) {
+            if (matchedHousehold.status === 'distributed') {
+                tokenValidationDiv.innerHTML = `<div class="token-info token-invalid">⚠️ Already distributed on ${matchedHousehold.distributionDate || 'a previous date'}</div>`;
+                errorMsgDiv.textContent = "❌ This e-Token has already been redeemed";
+                errorMsgDiv.style.display = 'block';
+                return;
+            }
+            tokenValidationDiv.innerHTML = `<div class="token-info token-valid">✅ Valid e-Token! Household verified.</div>`;
+            householdDetailsDiv.innerHTML = `<p><strong>🏠 Household Head:</strong> ${matchedHousehold.surname} ${matchedHousehold.firstname}</p><p><strong>📞 Phone:</strong> ${matchedHousehold.phone}</p><p><strong>👥 Total People:</strong> ${matchedHousehold.totalPeople}</p><p><strong>🦟 Nets Allocated:</strong> ${matchedHousehold.nets}</p><p><strong>📍 Assigned DP:</strong> ${matchedHousehold.distributionPoint}</p>`;
+            householdDetailsDiv.style.display = 'block';
+            currentValidHousehold = matchedHousehold;
+            checkDistributorFields();
+        } else {
+            tokenValidationDiv.innerHTML = `<div class="token-info token-invalid">❌ Invalid e-Token or does not match selected DP</div>`;
+            errorMsgDiv.textContent = "❌ e-Token not found or does not belong to this distribution point";
+            errorMsgDiv.style.display = 'block';
+        }
+    }
+
+    function checkDistributorFields() {
+        const distributorName = document.getElementById('distributorName').value.trim();
+        const distributorPhone = document.getElementById('distributorPhone').value.trim();
+        const confirmBtn = document.getElementById('confirmBtn');
+        if (currentValidHousehold && distributorName && distributorPhone && validateDistributorPhone(distributorPhone)) {
+            confirmBtn.disabled = false;
+        } else {
+            confirmBtn.disabled = true;
+        }
+    }
+
+    function renderRecordsTable() {
+        const households = getAllHouseholds();
+        const distributedRecords = households.filter(hh => hh.status === 'distributed');
+        const tbody = document.getElementById('recordsBody');
+        const emptyMsg = document.getElementById('emptyRecordsMsg');
+        const recordCountSpan = document.getElementById('recordCount');
+        
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        
+        if (distributedRecords.length === 0) {
+            if (emptyMsg) emptyMsg.style.display = 'block';
+            if (recordCountSpan) recordCountSpan.innerText = '0 records';
+            return;
+        }
+        
+        if (emptyMsg) emptyMsg.style.display = 'none';
+        if (recordCountSpan) recordCountSpan.innerText = `${distributedRecords.length} record${distributedRecords.length !== 1 ? 's' : ''}`;
+        
+        distributedRecords.slice().reverse().forEach(rec => {
+            const row = tbody.insertRow();
+            row.insertCell(0).innerText = rec.distributionDate || rec.date;
+            row.insertCell(1).innerText = `${rec.surname} ${rec.firstname}`;
+            row.insertCell(2).innerText = rec.district;
+            row.insertCell(3).innerText = rec.community;
+            row.insertCell(4).innerText = rec.nets;
+            row.insertCell(5).innerHTML = `<span style="font-family:monospace; font-size:0.65rem;">${rec.token}</span>`;
+            row.insertCell(6).innerText = rec.distributorName || 'N/A';
+            row.insertCell(7).innerHTML = `<span class="badge badge-distributed">DISTRIBUTED</span>`;
+        });
     }
 
     function confirmDist() {
-        alert("Distribution Confirmed");
+        if (!currentValidHousehold) { alert("Please enter a valid e-Token first"); return; }
+        const distributionDate = document.getElementById('distributionDate').value;
+        if (!distributionDate) { alert("Please select the distribution date"); return; }
+        const distributorName = document.getElementById('distributorName').value.trim();
+        const distributorPhone = document.getElementById('distributorPhone').value.trim();
+        if (!distributorName || !distributorPhone) { alert("Please fill in all distributor verification fields"); return; }
+        if (!validateDistributorPhone(distributorPhone)) { alert("Please enter a valid 9-digit phone number"); return; }
+        
+        let households = getAllHouseholds();
+        const index = households.findIndex(hh => hh.id === currentValidHousehold.id);
+        
+        if (index !== -1) {
+            households[index].status = 'distributed';
+            households[index].distributionDate = distributionDate;
+            households[index].distributionTime = new Date().toLocaleString();
+            households[index].distributorName = distributorName;
+            households[index].distributorPhone = distributorPhone;
+            localStorage.setItem('hh_records_full_device', JSON.stringify(households));
+            
+            document.getElementById('successMsg').innerHTML = `✅ Distribution Confirmed!<br>📅 Date: ${distributionDate}<br>🦟 Nets: ${currentValidHousehold.nets}<br>👤 Distributed by: ${distributorName}`;
+            document.getElementById('successMsg').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+            
+            // Reset form
+            document.getElementById('etokenInput').value = '';
+            document.getElementById('tokenValidationResult').innerHTML = '';
+            document.getElementById('householdDetails').style.display = 'none';
+            document.getElementById('distributorName').value = '';
+            document.getElementById('distributorPhone').value = '';
+            document.getElementById('confirmBtn').disabled = true;
+            currentValidHousehold = null;
+            
+            renderRecordsTable();
+            setTimeout(() => { document.getElementById('successMsg').style.display = 'none'; }, 5000);
+        }
     }
-</script>
 
+    // Event listeners
+    document.getElementById('etokenInput').oninput = validateEToken;
+    document.getElementById('distributorName').oninput = checkDistributorFields;
+    document.getElementById('distributorPhone').oninput = function() { validateDistributorPhone(this.value.trim()); checkDistributorFields(); };
+    locationSelect.addEventListener('change', () => {
+        document.getElementById('etokenInput').value = '';
+        document.getElementById('tokenValidationResult').innerHTML = '';
+        document.getElementById('householdDetails').style.display = 'none';
+        document.getElementById('confirmBtn').disabled = true;
+        currentValidHousehold = null;
+    });
+
+    // Tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            tabContents.forEach(content => content.classList.remove('active'));
+            if (tabId === 'distribution') document.getElementById('distribution-tab').classList.add('active');
+            if (tabId === 'records') { 
+                document.getElementById('records-tab').classList.add('active');
+                renderRecordsTable();
+            }
+        });
+    });
+
+    function initializeDemoData() {
+        if (!localStorage.getItem('hh_records_full_device')) {
+            localStorage.setItem('hh_records_full_device', JSON.stringify(getDemoHouseholds()));
+        }
+    }
+    initializeDemoData();
+    renderRecordsTable();
+</script>
 </body>
 </html>
