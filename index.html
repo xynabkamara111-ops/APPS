@@ -1,85 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NMCP - Sierra Leone App</title>
-    <style>
-        :root {
-            --primary: #11452a;
-            --accent: #c78b16;
-            --bg: #f4f7f6;
-            --card-bg: #ffffff;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+  <title>ITN Campaign App - Ministry of Health</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); margin: 0; padding: 15px; }
+    body {
+      background: radial-gradient(circle at 20% 30%, #0f2b3d, #071624);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: system-ui, 'Segoe UI', -apple-system, 'Helvetica Neue', sans-serif;
+      padding: 20px;
+    }
 
-        .app-container { max-width: 400px; margin: 0 auto; background: var(--card-bg); padding: 20px; border-radius: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    /* ----- PHONE SHAPE VIEW ----- */
+    .phone {
+      width: 375px;
+      height: 700px;
+      background-color: #ffffff;
+      border-radius: 48px;
+      box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(180, 200, 240, 0.15), 0 0 0 12px #0a1c2f;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
 
-        /* Header */
-        .header { text-align: center; margin-bottom: 20px; }
-        .header h1 { color: var(--primary); font-size: 1.2rem; }
-        .header h2 { font-size: 1rem; color: #333; margin: 5px 0; }
-        .header p { font-size: 0.8rem; color: #666; }
+    /* Remove any pseudo-elements like notches */
+    .phone::before,
+    .phone::after {
+      display: none;
+      content: none;
+    }
 
-        /* Tabs Section */
-        .tabs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 25px; }
-        .tab-btn {
-            display: block;
-            background: #f8f9f8;
-            border: 2px solid var(--primary);
-            padding: 15px;
-            border-radius: 12px;
-            text-align: center;
-            font-weight: bold;
-            color: #333;
-            text-decoration: none; /* Remove underline from links */
-            transition: 0.3s;
-        }
-        .tab-btn:hover { background: var(--primary); color: white; }
-        .full-width { grid-column: span 2; }
+    /* ----- HEADER (DARKER BLUE) WITH CENTERED TEXT ----- */
+    .app-header {
+      background-color: #0a2b4e;
+      flex-shrink: 0;
+      width: 100%;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;    /* centers text horizontally */
+      gap: 4px;
+      text-align: center;     /* ensures text alignment */
+    }
 
-        /* Partners */
-        .partners-section { text-align: center; border-top: 2px solid #eee; padding-top: 20px; }
-        .partners-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 10px; }
-        .partner-box { border: 1px solid #ddd; padding: 10px; border-radius: 10px; font-size: 0.7rem; }
-        .partner-box img { width: 40px; height: 40px; display: block; margin: 0 auto 5px; }
-        .wide { grid-column: span 3; }
+    .ministry-text {
+      color: white;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.3px;
+      line-height: 1.3;
+    }
 
-        .footer { text-align: center; font-size: 0.75rem; margin-top: 20px; font-weight: bold; }
-    </style>
+    .program-text {
+      color: white;
+      font-weight: 600;
+      font-size: 0.75rem;
+      opacity: 0.9;
+      letter-spacing: 0.2px;
+    }
+
+    .campaign-text {
+      color: #ffd966;
+      font-weight: 800;
+      font-size: 0.8rem;
+      letter-spacing: 0.3px;
+      margin-top: 2px;
+    }
+
+    /* ----- MAIN BODY (WHITE) - CARDS FULLY FIT THE BODY ----- */
+    .app-body {
+      flex: 1;
+      background-color: white;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* 2-column grid layout that expands to fill full height */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      flex: 1;
+      align-content: stretch;
+    }
+
+    /* Individual card styling - DARKER BLUE SHADE matching header */
+    .card {
+      background-color: #0a2b4e;
+      border-radius: 24px;
+      padding: 0;
+      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.2);
+      border: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+      min-height: 0;
+    }
+
+    .card:active {
+      transform: scale(0.97);
+      background-color: #072040;
+    }
+
+    /* Bold text styling - white for contrast */
+    .card-title {
+      font-size: 1rem;
+      font-weight: 800;
+      color: white;
+      letter-spacing: 0.5px;
+      line-height: 1.4;
+      text-transform: uppercase;
+      word-break: keep-all;
+      text-align: center;
+      font-family: inherit;
+      padding: 12px 8px;
+      width: 100%;
+    }
+
+    @media (min-width: 360px) {
+      .card-title {
+        font-size: 1.05rem;
+      }
+    }
+
+    @media (hover: hover) {
+      .card:hover {
+        transform: translateY(-3px);
+        background-color: #07285c;
+        box-shadow: 0 14px 24px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    /* Custom scrollbar for body */
+    .app-body::-webkit-scrollbar {
+      width: 4px;
+    }
+    .app-body::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+    .app-body::-webkit-scrollbar-thumb {
+      background: #0a2b4e;
+      border-radius: 10px;
+    }
+
+    /* ----- FOOTER (SAME DARKER BLUE SHADE) WITH TEXT ----- */
+    .app-footer {
+      background-color: #0a2b4e;
+      flex-shrink: 0;
+      width: 100%;
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .footer-copyright {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 0.7rem;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+    }
+
+    .footer-powered {
+      color: #ffd966;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* responsiveness for smaller screens */
+    @media (max-width: 420px) {
+      .phone {
+        width: 100%;
+        height: 95vh;
+        max-width: 380px;
+        border-radius: 40px;
+      }
+      .app-body {
+        padding: 12px;
+      }
+      .cards-grid {
+        gap: 12px;
+      }
+      .card-title {
+        font-size: 0.9rem;
+        font-weight: 800;
+        padding: 8px 6px;
+      }
+      .ministry-text {
+        font-size: 0.75rem;
+      }
+      .program-text {
+        font-size: 0.68rem;
+      }
+      .campaign-text {
+        font-size: 0.72rem;
+      }
+      .footer-copyright, .footer-powered {
+        font-size: 0.6rem;
+      }
+    }
+
+    @media (min-height: 750px) {
+      .cards-grid {
+        gap: 18px;
+      }
+      .card-title {
+        font-size: 1.1rem;
+      }
+    }
+  </style>
 </head>
 <body>
+<div class="phone">
+  <!-- HEADER: DARKER BLUE WITH CENTERED TEXT -->
+  <header class="app-header">
+    <div class="ministry-text">Ministry of Health</div>
+    <div class="program-text">National Malaria Control Program</div>
+    <div class="campaign-text">ITN Mass Campaign 2027</div>
+  </header>
 
-<div class="app-container">
-    <div class="header">
-        <h1>Ministry of Health</h1>
-        <h2>National Malaria Control Programme</h2>
-        <p>Sierra Leone</p>
+  <!-- BODY: WHITE BACKGROUND - 8 cards in 2 columns, FULLY FIT THE BODY -->
+  <main class="app-body">
+    <div class="cards-grid">
+      <!-- Card 1: Household registration -->
+      <div class="card" data-card="household">
+        <div class="card-title">HOUSEHOLD<br>REGISTRATION</div>
+      </div>
+      <!-- Card 2: Distribution -->
+      <div class="card" data-card="distribution">
+        <div class="card-title">DISTRIBUTION</div>
+      </div>
+      <!-- Card 3: Monitoring -->
+      <div class="card" data-card="monitoring">
+        <div class="card-title">MONITORING</div>
+      </div>
+      <!-- Card 4: ITN Movement -->
+      <div class="card" data-card="itn">
+        <div class="card-title">ITN MOVEMENT</div>
+      </div>
+      <!-- Card 5: Stock management -->
+      <div class="card" data-card="stock">
+        <div class="card-title">STOCK<br>MANAGEMENT</div>
+      </div>
+      <!-- Card 6: Device tracking -->
+      <div class="card" data-card="device">
+        <div class="card-title">DEVICE TRACKING</div>
+      </div>
+      <!-- Card 7: Dashboard -->
+      <div class="card" data-card="dashboard">
+        <div class="card-title">DASHBOARD</div>
+      </div>
+      <!-- Card 8: Reconciliation -->
+      <div class="card" data-card="reconciliation">
+        <div class="card-title">RECONCILIATION</div>
+      </div>
     </div>
+  </main>
 
-    <div class="tabs-grid">
-        <a href="reg.html" class="tab-btn">Household Registration</a>
-        <a href="dist.html" class="tab-btn">Distribution</a>
-        <a href="dash.html" class="tab-btn">Dashboard</a>
-        <a href="itnmov.html" class="tab-btn">ITN Movement</a>
-        <a href="recc.html" class="tab-btn full-width">Reconciliation</a>
-    </div>
-
-    <div class="partners-section">
-        <h3>Implementing Partners</h3>
-        <div class="partners-grid">
-            <div class="partner-box"><img src="who_logo.png" alt="WHO">WHO</div>
-            <div class="partner-box"><img src="global_fund.png" alt="GF">Global Fund</div>
-            <div class="partner-box"><img src="nmcp_logo.png" alt="NMCP">NMCP</div>
-            <div class="partner-box wide"><img src="world_vision.png" alt="WV">World Vision</div>
-        </div>
-    </div>
-
-    <div class="footer">
-        Powered by ICF@2026 ITN-Mass Campaign 2026/2027
-    </div>
+  <!-- FOOTER: SAME DARKER BLUE SHADE WITH REQUIRED TEXT -->
+  <footer class="app-footer">
+    <div class="footer-copyright">ICF-SL@2027</div>
+    <div class="footer-powered">Powered by Zainab</div>
+  </footer>
 </div>
 
+<script>
+  // Click feedback for cards
+  const cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      const titleElem = card.querySelector('.card-title');
+      let cardName = titleElem ? titleElem.innerText.trim().replace(/\n/g, ' ') : 'Card';
+      console.log(`[ITN Campaign] Selected: ${cardName}`);
+    });
+  });
+</script>
 </body>
 </html>
