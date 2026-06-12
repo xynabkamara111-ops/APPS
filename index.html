@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
-  <title>ITN Campaign App - Ministry of Health</title>
+  <title>ITN Campaign - Ministry of Health</title>
   <style>
     * {
       margin: 0;
@@ -34,52 +34,70 @@
       position: relative;
     }
 
-    /* Remove any pseudo-elements like notches */
     .phone::before,
     .phone::after {
       display: none;
       content: none;
     }
 
-    /* ----- HEADER (DARKER BLUE) WITH CENTERED TEXT ----- */
+    /* ----- HEADER WITH LEFT AND RIGHT GOVERNMENT LOGOS ----- */
     .app-header {
       background-color: #0a2b4e;
       flex-shrink: 0;
       width: 100%;
-      padding: 12px 16px;
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .header-left, .header-right {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .header-left img, .header-right img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .header-center {
+      flex: 1;
       display: flex;
       flex-direction: column;
+      align-items: center;
       justify-content: center;
-      align-items: center;    /* centers text horizontally */
-      gap: 4px;
-      text-align: center;     /* ensures text alignment */
+      text-align: center;
+      gap: 3px;
     }
 
     .ministry-text {
       color: white;
       font-weight: 700;
-      font-size: 0.85rem;
+      font-size: 0.72rem;
       letter-spacing: 0.3px;
-      line-height: 1.3;
     }
 
     .program-text {
       color: white;
       font-weight: 600;
-      font-size: 0.75rem;
+      font-size: 0.65rem;
       opacity: 0.9;
-      letter-spacing: 0.2px;
     }
 
     .campaign-text {
       color: #ffd966;
       font-weight: 800;
-      font-size: 0.8rem;
-      letter-spacing: 0.3px;
-      margin-top: 2px;
+      font-size: 0.68rem;
     }
 
-    /* ----- MAIN BODY (WHITE) - CARDS FULLY FIT THE BODY ----- */
+    /* ----- MAIN BODY - Switches between Login and Cards ----- */
     .app-body {
       flex: 1;
       background-color: white;
@@ -89,16 +107,132 @@
       flex-direction: column;
     }
 
-    /* 2-column grid layout that expands to fill full height */
+    /* Login Container */
+    .login-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .logo-area {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-icon {
+      font-size: 48px;
+      margin-bottom: 8px;
+    }
+
+    .welcome-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #0a2b4e;
+      margin-bottom: 4px;
+    }
+
+    .sub-text {
+      font-size: 0.7rem;
+      color: #64748b;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 6px;
+    }
+
+    .required::after {
+      content: " *";
+      color: #e53e3e;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      outline: none;
+      transition: 0.2s;
+      background: white;
+    }
+
+    input:focus {
+      border-color: #0a2b4e;
+      box-shadow: 0 0 0 3px rgba(10, 43, 78, 0.1);
+    }
+
+    .login-btn {
+      background-color: #0a2b4e;
+      color: white;
+      border: none;
+      padding: 14px;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      width: 100%;
+      transition: 0.2s;
+      margin-top: 12px;
+    }
+
+    .login-btn:active {
+      transform: scale(0.97);
+    }
+
+    .error-message {
+      background-color: #fee2e2;
+      color: #b91c1c;
+      padding: 10px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      margin-top: 16px;
+      text-align: center;
+      display: none;
+    }
+
+    .demo-cred {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 16px;
+      margin-top: 24px;
+      font-size: 0.7rem;
+      text-align: center;
+      color: #475569;
+    }
+
+    .demo-cred span {
+      font-weight: 700;
+      color: #0a2b4e;
+    }
+
+    /* Cards Container */
+    .cards-container {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      height: 100%;
+    }
+
+    /* Cards Grid */
     .cards-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 16px;
       flex: 1;
       align-content: stretch;
+      margin-bottom: 16px;
     }
 
-    /* Individual card styling - DARKER BLUE SHADE matching header */
     .card {
       background-color: #0a2b4e;
       border-radius: 24px;
@@ -121,7 +255,6 @@
       background-color: #072040;
     }
 
-    /* Bold text styling - white for contrast */
     .card-title {
       font-size: 1rem;
       font-weight: 800;
@@ -150,7 +283,32 @@
       }
     }
 
-    /* Custom scrollbar for body */
+    /* Logout Button - Bottom Left */
+    .logout-btn-container {
+      display: flex;
+      justify-content: flex-start;
+      margin-top: 8px;
+      margin-bottom: 4px;
+    }
+
+    .logout-btn {
+      background-color: #dc2626;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.75rem;
+      cursor: pointer;
+      width: auto;
+      transition: 0.2s;
+    }
+
+    .logout-btn:active {
+      transform: scale(0.97);
+    }
+
+    /* Custom scrollbar */
     .app-body::-webkit-scrollbar {
       width: 4px;
     }
@@ -163,7 +321,7 @@
       border-radius: 10px;
     }
 
-    /* ----- FOOTER (SAME DARKER BLUE SHADE) WITH TEXT ----- */
+    /* Footer */
     .app-footer {
       background-color: #0a2b4e;
       flex-shrink: 0;
@@ -179,19 +337,15 @@
 
     .footer-copyright {
       color: rgba(255, 255, 255, 0.8);
-      font-size: 0.7rem;
-      font-weight: 500;
-      letter-spacing: 0.3px;
+      font-size: 0.65rem;
     }
 
     .footer-powered {
       color: #ffd966;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       font-weight: 600;
-      letter-spacing: 0.3px;
     }
 
-    /* responsiveness for smaller screens */
     @media (max-width: 420px) {
       .phone {
         width: 100%;
@@ -207,81 +361,116 @@
       }
       .card-title {
         font-size: 0.9rem;
-        font-weight: 800;
         padding: 8px 6px;
       }
+      .header-left, .header-right {
+        width: 36px;
+        height: 36px;
+      }
       .ministry-text {
-        font-size: 0.75rem;
+        font-size: 0.65rem;
       }
       .program-text {
-        font-size: 0.68rem;
+        font-size: 0.58rem;
       }
       .campaign-text {
-        font-size: 0.72rem;
-      }
-      .footer-copyright, .footer-powered {
         font-size: 0.6rem;
       }
-    }
-
-    @media (min-height: 750px) {
-      .cards-grid {
-        gap: 18px;
-      }
-      .card-title {
-        font-size: 1.1rem;
+      .logout-btn {
+        padding: 8px 16px;
+        font-size: 0.7rem;
       }
     }
   </style>
 </head>
 <body>
 <div class="phone">
-  <!-- HEADER: DARKER BLUE WITH CENTERED TEXT -->
   <header class="app-header">
-    <div class="ministry-text">Ministry of Health</div>
-    <div class="program-text">National Malaria Control Program</div>
-    <div class="campaign-text">ITN Mass Campaign 2027</div>
+    <div class="header-left">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
+           alt="Government of Sierra Leone Logo"
+           onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
+    </div>
+    <div class="header-center">
+      <div class="ministry-text">Ministry of Health</div>
+      <div class="program-text">National Malaria Control Program</div>
+      <div class="campaign-text">ITN Mass Campaign 2027</div>
+    </div>
+    <div class="header-right">
+      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
+           alt="Government of Sierra Leone Logo"
+           onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
+    </div>
   </header>
 
-  <!-- BODY: WHITE BACKGROUND - 8 cards in 2 columns, FULLY FIT THE BODY -->
   <main class="app-body">
-    <div class="cards-grid">
-      <!-- Card 1: Household registration -->
-      <div class="card" data-card="household">
-        <div class="card-title">HOUSEHOLD<br>REGISTRATION</div>
+    <!-- Login Section -->
+    <div id="loginSection" class="login-container">
+      <div class="logo-area">
+        <div class="logo-icon">🦟</div>
+        <div class="welcome-text">Welcome Back</div>
+        <div class="sub-text">Sign in to continue</div>
       </div>
-      <!-- Card 2: Distribution -->
-      <div class="card" data-card="distribution">
-        <div class="card-title">DISTRIBUTION</div>
+
+      <div class="form-group">
+        <label class="required">Username</label>
+        <input type="text" id="username" placeholder="Enter your username" autocomplete="off">
       </div>
-      <!-- Card 3: Monitoring -->
-      <div class="card" data-card="monitoring">
-        <div class="card-title">MONITORING</div>
+
+      <div class="form-group">
+        <label class="required">Password</label>
+        <input type="password" id="password" placeholder="Enter your password">
       </div>
-      <!-- Card 4: ITN Movement -->
-      <div class="card" data-card="itn">
-        <div class="card-title">ITN MOVEMENT</div>
+
+      <button class="login-btn" id="loginBtn">🔐 Login</button>
+
+      <div class="error-message" id="errorMsg">
+        ❌ Invalid username or password
       </div>
-      <!-- Card 5: Stock management -->
-      <div class="card" data-card="stock">
-        <div class="card-title">STOCK<br>MANAGEMENT</div>
+
+      <div class="demo-cred">
+        <span>Demo Credentials</span><br>
+        Username: <strong>Zainab Kamara</strong> &nbsp;|&nbsp; Password: <strong>ITN2027</strong>
       </div>
-      <!-- Card 6: Device tracking -->
-      <div class="card" data-card="device">
-        <div class="card-title">DEVICE TRACKING</div>
+    </div>
+
+    <!-- Cards Dashboard Section (Hidden until login) -->
+    <div id="cardsSection" class="cards-container">
+      <!-- Cards Grid -->
+      <div class="cards-grid">
+        <div class="card" data-card="household" data-page="reg.html">
+          <div class="card-title">HOUSEHOLD<br>REGISTRATION</div>
+        </div>
+        <div class="card" data-card="distribution" data-page="dist.html">
+          <div class="card-title">DISTRIBUTION</div>
+        </div>
+        <div class="card" data-card="monitoring" data-page="mon.html">
+          <div class="card-title">MONITORING</div>
+        </div>
+        <div class="card" data-card="itn" data-page="itnmov.html">
+          <div class="card-title">ITN MOVEMENT</div>
+        </div>
+        <div class="card" data-card="stock" data-page="stm.html">
+          <div class="card-title">STOCK<br>MANAGEMENT</div>
+        </div>
+        <div class="card" data-card="device" data-page="dvt.html">
+          <div class="card-title">DEVICE TRACKING</div>
+        </div>
+        <div class="card" data-card="dashboard" data-page="dash.html">
+          <div class="card-title">DASHBOARD</div>
+        </div>
+        <div class="card" data-card="reconciliation" data-page="recc.html">
+          <div class="card-title">RECONCILIATION</div>
+        </div>
       </div>
-      <!-- Card 7: Dashboard -->
-      <div class="card" data-card="dashboard">
-        <div class="card-title">DASHBOARD</div>
-      </div>
-      <!-- Card 8: Reconciliation -->
-      <div class="card" data-card="reconciliation">
-        <div class="card-title">RECONCILIATION</div>
+      
+      <!-- Logout Button at Bottom Left -->
+      <div class="logout-btn-container">
+        <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
       </div>
     </div>
   </main>
 
-  <!-- FOOTER: SAME DARKER BLUE SHADE WITH REQUIRED TEXT -->
   <footer class="app-footer">
     <div class="footer-copyright">ICF-SL@2027</div>
     <div class="footer-powered">Powered by Zainab</div>
@@ -289,15 +478,113 @@
 </div>
 
 <script>
-  // Click feedback for cards
-  const cards = document.querySelectorAll('.card');
-  cards.forEach(card => {
-    card.addEventListener('click', () => {
-      const titleElem = card.querySelector('.card-title');
-      let cardName = titleElem ? titleElem.innerText.trim().replace(/\n/g, ' ') : 'Card';
-      console.log(`[ITN Campaign] Selected: ${cardName}`);
+  // Credentials
+  const VALID_USERNAME = "Zainab Kamara";
+  const VALID_PASSWORD = "ITN2027";
+
+  // DOM Elements
+  const loginSection = document.getElementById('loginSection');
+  const cardsSection = document.getElementById('cardsSection');
+  const loginBtn = document.getElementById('loginBtn');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const usernameInput = document.getElementById('username');
+  const passwordInput = document.getElementById('password');
+  const errorMsgDiv = document.getElementById('errorMsg');
+
+  // Function to show cards and hide login
+  function showCards() {
+    loginSection.style.display = 'none';
+    cardsSection.style.display = 'flex';
+    // Store login state
+    localStorage.setItem('itn_logged_in', 'true');
+  }
+
+  // Function to show login and hide cards
+  function showLogin() {
+    loginSection.style.display = 'flex';
+    cardsSection.style.display = 'none';
+    // Clear login state
+    localStorage.setItem('itn_logged_in', 'false');
+    // Clear input fields
+    usernameInput.value = '';
+    passwordInput.value = '';
+    errorMsgDiv.style.display = 'none';
+  }
+
+  // Handle login
+  function handleLogin() {
+    const enteredUsername = usernameInput.value.trim();
+    const enteredPassword = passwordInput.value.trim();
+
+    errorMsgDiv.style.display = 'none';
+
+    if (!enteredUsername || !enteredPassword) {
+      errorMsgDiv.textContent = "❌ Please enter both username and password";
+      errorMsgDiv.style.display = 'block';
+      return;
+    }
+
+    if (enteredUsername === VALID_USERNAME && enteredPassword === VALID_PASSWORD) {
+      showCards();
+    } else {
+      errorMsgDiv.textContent = "❌ Invalid username or password. Please try again.";
+      errorMsgDiv.style.display = 'block';
+      passwordInput.value = '';
+      passwordInput.focus();
+    }
+  }
+
+  // Handle logout
+  function handleLogout() {
+    showLogin();
+  }
+
+  // Handle card clicks - navigation to respective pages
+  function setupCardNavigation() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach(card => {
+      card.addEventListener('click', () => {
+        const targetPage = card.getAttribute('data-page');
+        if (targetPage) {
+          console.log(`[ITN Campaign] Navigating to: ${targetPage}`);
+          window.location.href = targetPage;
+        } else {
+          const titleElem = card.querySelector('.card-title');
+          let cardName = titleElem ? titleElem.innerText.trim().replace(/\n/g, ' ') : 'Card';
+          console.log(`[ITN Campaign] Selected: ${cardName} - No page defined`);
+          alert(`${cardName} - Page coming soon`);
+        }
+      });
     });
-  });
+  }
+
+  // Check if user is already logged in (e.g., after page refresh)
+  function checkLoginState() {
+    const isLoggedIn = localStorage.getItem('itn_logged_in');
+    if (isLoggedIn === 'true') {
+      showCards();
+    } else {
+      showLogin();
+    }
+  }
+
+  // Event listeners
+  loginBtn.addEventListener('click', handleLogin);
+  logoutBtn.addEventListener('click', handleLogout);
+
+  // Enter key press for login
+  function onEnterPress(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleLogin();
+    }
+  }
+  usernameInput.addEventListener('keypress', onEnterPress);
+  passwordInput.addEventListener('keypress', onEnterPress);
+
+  // Initialize
+  checkLoginState();
+  setupCardNavigation();
 </script>
 </body>
 </html>
