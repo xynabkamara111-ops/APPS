@@ -21,7 +21,6 @@
       padding: 20px;
     }
 
-    /* ----- PHONE SHAPE VIEW ----- */
     .phone {
       width: 375px;
       height: 700px;
@@ -40,7 +39,6 @@
       content: none;
     }
 
-    /* ----- HEADER WITH LEFT AND RIGHT GOVERNMENT LOGOS ----- */
     .app-header {
       background-color: #0a2b4e;
       flex-shrink: 0;
@@ -97,7 +95,6 @@
       font-size: 0.68rem;
     }
 
-    /* ----- MAIN BODY - Switches between Login and Cards ----- */
     .app-body {
       flex: 1;
       background-color: white;
@@ -107,7 +104,6 @@
       flex-direction: column;
     }
 
-    /* Login Container */
     .login-container {
       flex: 1;
       display: flex;
@@ -200,22 +196,6 @@
       display: none;
     }
 
-    .demo-cred {
-      background: #f1f5f9;
-      padding: 12px;
-      border-radius: 16px;
-      margin-top: 24px;
-      font-size: 0.7rem;
-      text-align: center;
-      color: #475569;
-    }
-
-    .demo-cred span {
-      font-weight: 700;
-      color: #0a2b4e;
-    }
-
-    /* Cards Container */
     .cards-container {
       display: none;
       flex-direction: column;
@@ -223,7 +203,6 @@
       height: 100%;
     }
 
-    /* Cards Grid */
     .cards-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -283,7 +262,6 @@
       }
     }
 
-    /* Logout Button - Bottom Left */
     .logout-btn-container {
       display: flex;
       justify-content: flex-start;
@@ -308,7 +286,6 @@
       transform: scale(0.97);
     }
 
-    /* Custom scrollbar */
     .app-body::-webkit-scrollbar {
       width: 4px;
     }
@@ -321,7 +298,6 @@
       border-radius: 10px;
     }
 
-    /* Footer */
     .app-footer {
       background-color: #0a2b4e;
       flex-shrink: 0;
@@ -427,44 +403,14 @@
       <div class="error-message" id="errorMsg">
         ❌ Invalid username or password
       </div>
-
-      <div class="demo-cred">
-        <span>Demo Credentials</span><br>
-        Username: <strong>Zainab Kamara</strong> &nbsp;|&nbsp; Password: <strong>ITN2027</strong>
-      </div>
     </div>
 
     <!-- Cards Dashboard Section (Hidden until login) -->
     <div id="cardsSection" class="cards-container">
-      <!-- Cards Grid -->
-      <div class="cards-grid">
-        <div class="card" data-card="household" data-page="reg.html">
-          <div class="card-title">HOUSEHOLD<br>REGISTRATION</div>
-        </div>
-        <div class="card" data-card="distribution" data-page="dist.html">
-          <div class="card-title">DISTRIBUTION</div>
-        </div>
-        <div class="card" data-card="monitoring" data-page="mon.html">
-          <div class="card-title">MONITORING</div>
-        </div>
-        <div class="card" data-card="itn" data-page="itnmov.html">
-          <div class="card-title">ITN MOVEMENT</div>
-        </div>
-        <div class="card" data-card="stock" data-page="stm.html">
-          <div class="card-title">STOCK<br>MANAGEMENT</div>
-        </div>
-        <div class="card" data-card="device" data-page="dvt.html">
-          <div class="card-title">DEVICE TRACKING</div>
-        </div>
-        <div class="card" data-card="dashboard" data-page="dash.html">
-          <div class="card-title">DASHBOARD</div>
-        </div>
-        <div class="card" data-card="reconciliation" data-page="recc.html">
-          <div class="card-title">RECONCILIATION</div>
-        </div>
+      <div class="cards-grid" id="cardsGrid">
+        <!-- Cards will be dynamically populated based on user role -->
       </div>
       
-      <!-- Logout Button at Bottom Left -->
       <div class="logout-btn-container">
         <button id="logoutBtn" class="logout-btn">🚪 Logout</button>
       </div>
@@ -478,40 +424,122 @@
 </div>
 
 <script>
-  // Credentials
-  const VALID_USERNAME = "Zainab Kamara";
-  const VALID_PASSWORD = "ITN2027";
+  // ========== CREDENTIALS DATABASE (CSV format) ==========
+  // Username,Password,Role,Pages (comma-separated page names without .html)
+  const credentialsCSV = `Username,Password,Role,Pages
+User_001,HHR_123,Household Registrar,reg
+User_002,Dist_123,Distribution Officer,dist
+User_003,NM_123,Navigation Manager,mon,recc,dash
+User_004,TA_123,Tech Assistant,mon,recc,dash
+User_005,DHMT_123,District Health Team,mon,recc,dvt,dash
+User_006,ITNMOV_123,ITN Movement Officer,itnmov
+User_007,stm_123,Stock Manager,stm
+User_008,stm_123,Stock & Device Manager,stm,dvt`;
+
+  // Parse CSV to array of user objects
+  function parseCSV(csvText) {
+    const lines = csvText.trim().split('\n');
+    const headers = lines[0].split(',');
+    const users = [];
+    
+    for (let i = 1; i < lines.length; i++) {
+      const values = lines[i].split(',');
+      const user = {};
+      for (let j = 0; j < headers.length; j++) {
+        user[headers[j].trim()] = values[j] ? values[j].trim() : '';
+      }
+      // Parse pages - handle multiple pages per user
+      if (user.Pages) {
+        user.pagesArray = user.Pages.split(',').map(p => p.trim() + '.html');
+      } else {
+        user.pagesArray = [];
+      }
+      users.push(user);
+    }
+    return users;
+  }
+
+  // Load credentials
+  const users = parseCSV(credentialsCSV);
+
+  // Card definitions - each card links to a specific HTML page
+  // These correspond to the 8 required pages: reg.html, dist.html, mon.html, itnmov.html, stm.html, dvt.html, dash.html, recc.html
+  const allCards = [
+    { id: "household", title: "HOUSEHOLD<br>REGISTRATION", page: "reg.html" },
+    { id: "distribution", title: "DISTRIBUTION", page: "dist.html" },
+    { id: "monitoring", title: "MONITORING", page: "mon.html" },
+    { id: "itnmov", title: "ITN MOVEMENT", page: "itnmov.html" },
+    { id: "stock", title: "STOCK<br>MANAGEMENT", page: "stm.html" },
+    { id: "device", title: "DEVICE TRACKING", page: "dvt.html" },
+    { id: "dashboard", title: "DASHBOARD", page: "dash.html" },
+    { id: "reconciliation", title: "RECONCILIATION", page: "recc.html" }
+  ];
 
   // DOM Elements
   const loginSection = document.getElementById('loginSection');
   const cardsSection = document.getElementById('cardsSection');
+  const cardsGrid = document.getElementById('cardsGrid');
   const loginBtn = document.getElementById('loginBtn');
   const logoutBtn = document.getElementById('logoutBtn');
   const usernameInput = document.getElementById('username');
   const passwordInput = document.getElementById('password');
   const errorMsgDiv = document.getElementById('errorMsg');
 
+  let currentUser = null;
+
+  // Function to render cards based on user's allowed pages
+  function renderCardsForUser(user) {
+    if (!user || !user.pagesArray) {
+      cardsGrid.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;">No modules assigned to this user</div>';
+      return;
+    }
+    
+    const allowedPages = user.pagesArray;
+    const allowedCards = allCards.filter(card => allowedPages.includes(card.page));
+    
+    if (allowedCards.length === 0) {
+      cardsGrid.innerHTML = '<div style="text-align:center; padding:40px; color:#64748b;">No modules assigned to this user</div>';
+      return;
+    }
+    
+    cardsGrid.innerHTML = '';
+    allowedCards.forEach(card => {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'card';
+      cardDiv.setAttribute('data-card', card.id);
+      cardDiv.setAttribute('data-page', card.page);
+      cardDiv.innerHTML = `<div class="card-title">${card.title}</div>`;
+      cardDiv.addEventListener('click', () => {
+        console.log(`[ITN Campaign] Navigating to: ${card.page}`);
+        window.location.href = card.page;
+      });
+      cardsGrid.appendChild(cardDiv);
+    });
+  }
+
   // Function to show cards and hide login
-  function showCards() {
+  function showCards(user) {
+    currentUser = user;
+    renderCardsForUser(user);
     loginSection.style.display = 'none';
     cardsSection.style.display = 'flex';
-    // Store login state
     localStorage.setItem('itn_logged_in', 'true');
+    localStorage.setItem('itn_username', user.Username);
   }
 
   // Function to show login and hide cards
   function showLogin() {
     loginSection.style.display = 'flex';
     cardsSection.style.display = 'none';
-    // Clear login state
+    currentUser = null;
     localStorage.setItem('itn_logged_in', 'false');
-    // Clear input fields
+    localStorage.removeItem('itn_username');
     usernameInput.value = '';
     passwordInput.value = '';
     errorMsgDiv.style.display = 'none';
   }
 
-  // Handle login
+  // Handle login - validate against CSV credentials
   function handleLogin() {
     const enteredUsername = usernameInput.value.trim();
     const enteredPassword = passwordInput.value.trim();
@@ -524,8 +552,11 @@
       return;
     }
 
-    if (enteredUsername === VALID_USERNAME && enteredPassword === VALID_PASSWORD) {
-      showCards();
+    // Find user in credentials
+    const matchedUser = users.find(u => u.Username === enteredUsername && u.Password === enteredPassword);
+    
+    if (matchedUser) {
+      showCards(matchedUser);
     } else {
       errorMsgDiv.textContent = "❌ Invalid username or password. Please try again.";
       errorMsgDiv.style.display = 'block';
@@ -539,33 +570,19 @@
     showLogin();
   }
 
-  // Handle card clicks - navigation to respective pages
-  function setupCardNavigation() {
-    const cards = document.querySelectorAll('.card');
-    cards.forEach(card => {
-      card.addEventListener('click', () => {
-        const targetPage = card.getAttribute('data-page');
-        if (targetPage) {
-          console.log(`[ITN Campaign] Navigating to: ${targetPage}`);
-          window.location.href = targetPage;
-        } else {
-          const titleElem = card.querySelector('.card-title');
-          let cardName = titleElem ? titleElem.innerText.trim().replace(/\n/g, ' ') : 'Card';
-          console.log(`[ITN Campaign] Selected: ${cardName} - No page defined`);
-          alert(`${cardName} - Page coming soon`);
-        }
-      });
-    });
-  }
-
-  // Check if user is already logged in (e.g., after page refresh)
+  // Check if user is already logged in
   function checkLoginState() {
     const isLoggedIn = localStorage.getItem('itn_logged_in');
-    if (isLoggedIn === 'true') {
-      showCards();
-    } else {
-      showLogin();
+    const savedUsername = localStorage.getItem('itn_username');
+    
+    if (isLoggedIn === 'true' && savedUsername) {
+      const savedUser = users.find(u => u.Username === savedUsername);
+      if (savedUser) {
+        showCards(savedUser);
+        return;
+      }
     }
+    showLogin();
   }
 
   // Event listeners
@@ -584,7 +601,6 @@
 
   // Initialize
   checkLoginState();
-  setupCardNavigation();
 </script>
 </body>
 </html>
