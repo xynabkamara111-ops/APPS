@@ -1,1 +1,1054 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <title>ITN Campaign Dashboard - Ministry of Health</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            background: radial-gradient(circle at 20% 30%, #0f2b3d, #071624);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: system-ui, 'Segoe UI', -apple-system, 'Helvetica Neue', sans-serif;
+            padding: 20px;
+        }
+
+        .phone {
+            width: 375px;
+            height: 700px;
+            background-color: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 8px rgba(180, 200, 240, 0.15), 0 0 0 12px #0a1c2f;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .phone::before,
+        .phone::after {
+            display: none;
+            content: none;
+        }
+
+        .app-header {
+            background-color: #0a2b4e;
+            flex-shrink: 0;
+            width: 100%;
+            padding: 10px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+
+        .header-left, .header-right {
+            flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .header-left img, .header-right img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .header-center {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 3px;
+        }
+
+        .ministry-text {
+            color: white;
+            font-weight: 700;
+            font-size: 0.7rem;
+        }
+
+        .program-text {
+            color: white;
+            font-weight: 600;
+            font-size: 0.62rem;
+            opacity: 0.9;
+        }
+
+        .campaign-text {
+            color: #ffd966;
+            font-weight: 800;
+            font-size: 0.65rem;
+        }
+
+        .app-body {
+            flex: 1;
+            background-color: #f0f4f8;
+            overflow-y: auto;
+            padding: 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #0a2b4e, #1e4a76);
+            border-radius: 20px;
+            padding: 14px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+        }
+
+        .stat-card:active {
+            transform: scale(0.95);
+        }
+
+        .stat-card .drill-hint {
+            font-size: 0.5rem;
+            opacity: 0.6;
+            margin-top: 4px;
+            display: block;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        .sync-card {
+            background: linear-gradient(135deg, #1a4a6e, #2a6a8e);
+            border-radius: 20px;
+            padding: 14px;
+            color: white;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .sync-card:active {
+            transform: scale(0.95);
+        }
+
+        .sync-value {
+            font-size: 2rem;
+            font-weight: 800;
+            margin-bottom: 4px;
+        }
+
+        .sync-label {
+            font-size: 0.7rem;
+            opacity: 0.9;
+        }
+
+        .sync-sub {
+            font-size: 0.6rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        .sync-progress-container {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            height: 10px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .sync-progress-bar {
+            background: linear-gradient(90deg, #22c55e, #ffd966);
+            height: 100%;
+            border-radius: 20px;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .chart-container {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .chart-container:active {
+            transform: scale(0.98);
+        }
+
+        .chart-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0a2b4e;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #0a2b4e;
+            display: inline-block;
+        }
+
+        .chart-title .drill-icon {
+            font-size: 0.6rem;
+            opacity: 0.5;
+            margin-left: 6px;
+        }
+
+        canvas {
+            max-height: 180px;
+            width: 100%;
+        }
+
+        .progress-section {
+            background: white;
+            border-radius: 24px;
+            padding: 16px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .progress-section:active {
+            transform: scale(0.98);
+        }
+
+        .progress-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0a2b4e;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 24px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #0a2b4e, #1e4a76);
+            height: 100%;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 600;
+            width: 0%;
+        }
+
+        .drill-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .drill-modal.active {
+            display: flex;
+        }
+
+        .drill-content {
+            background: white;
+            border-radius: 32px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .drill-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #0a2b4e;
+        }
+
+        .drill-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0a2b4e;
+        }
+
+        .drill-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0 8px;
+        }
+
+        .drill-close:active {
+            transform: scale(0.9);
+        }
+
+        .drill-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+        }
+
+        .drill-item:last-child {
+            border-bottom: none;
+        }
+
+        .drill-item .label {
+            color: #475569;
+        }
+
+        .drill-item .value {
+            font-weight: 600;
+            color: #0a2b4e;
+        }
+
+        .drill-item .value.distributed {
+            color: #22c55e;
+        }
+
+        .drill-item .value.pending {
+            color: #f97316;
+        }
+
+        .drill-item .value.synced {
+            color: #3b82f6;
+        }
+
+        .drill-subtitle {
+            font-size: 0.7rem;
+            color: #64748b;
+            margin-bottom: 12px;
+        }
+
+        .drill-sub-item {
+            padding-left: 16px;
+            border-left: 2px solid #e2e8f0;
+            margin-left: 8px;
+            margin-top: 4px;
+        }
+
+        .drill-sub-item .drill-item {
+            padding: 6px 0;
+            border-bottom: none;
+        }
+
+        .drill-sub-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #0a2b4e;
+            padding: 8px 0 4px 8px;
+        }
+
+        .back-btn {
+            background-color: #475569;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.75rem;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .back-btn:active {
+            transform: scale(0.97);
+        }
+
+        .app-footer {
+            background-color: #0a2b4e;
+            flex-shrink: 0;
+            width: 100%;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .footer-text {
+            color: white;
+            font-size: 0.6rem;
+        }
+
+        @media (max-width: 420px) {
+            .phone {
+                width: 100%;
+                height: 95vh;
+                max-width: 380px;
+                border-radius: 40px;
+            }
+            .stat-value {
+                font-size: 1.4rem;
+            }
+            .stat-label {
+                font-size: 0.6rem;
+            }
+            .sync-value {
+                font-size: 1.6rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="phone">
+    <header class="app-header">
+        <div class="header-left">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
+                 alt="Coat of Arms"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
+        </div>
+        <div class="header-center">
+            <div class="ministry-text">Ministry of Health</div>
+            <div class="program-text">National Malaria Control Program</div>
+            <div class="campaign-text">ITN Mass Campaign 2027</div>
+        </div>
+        <div class="header-right">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
+                 alt="Coat of Arms"
+                 onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
+        </div>
+    </header>
+
+    <main class="app-body">
+        <div class="stats-grid">
+            <div class="stat-card" onclick="drillTotalReg()">
+                <div class="stat-value" id="totalReg">0</div>
+                <div class="stat-label">Total Registered</div>
+                <span class="drill-hint">👆 Tap to view details</span>
+            </div>
+            <div class="stat-card" onclick="drillTotalDist()">
+                <div class="stat-value" id="totalDist">0</div>
+                <div class="stat-label">Total Distributed</div>
+                <span class="drill-hint">👆 Tap to view details</span>
+            </div>
+            <div class="stat-card" onclick="drillPending()">
+                <div class="stat-value" id="pendingDist">0</div>
+                <div class="stat-label">Pending Distribution</div>
+                <span class="drill-hint">👆 Tap to view details</span>
+            </div>
+            <div class="stat-card" onclick="drillNets()">
+                <div class="stat-value" id="totalNets">0</div>
+                <div class="stat-label">Nets Distributed</div>
+                <span class="drill-hint">👆 Tap to view details</span>
+            </div>
+        </div>
+
+        <div class="sync-card" onclick="drillSync()">
+            <div class="sync-label">🔄 SYNCING RATE</div>
+            <div class="sync-value" id="syncRate">0%</div>
+            <div class="sync-sub" id="syncStatus">No records to sync</div>
+            <div class="sync-progress-container">
+                <div class="sync-progress-bar" id="syncProgressBar"></div>
+            </div>
+            <div class="sync-sub" id="syncDetails" style="margin-top: 6px;">0 synced / 0 pending</div>
+        </div>
+
+        <div class="progress-section" onclick="drillProgress()">
+            <div class="progress-title">📊 Campaign Progress</div>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar">0%</div>
+            </div>
+            <div style="font-size: 0.7rem; color: #475569; text-align: center; margin-top: 8px;" id="progressText"></div>
+        </div>
+
+        <div class="chart-container" onclick="drillDistrictChart()">
+            <div class="chart-title">📍 Distribution by District <span class="drill-icon">👆 tap to drill</span></div>
+            <canvas id="districtChart" width="300" height="180"></canvas>
+        </div>
+
+        <div class="chart-container" onclick="drillTrendChart()">
+            <div class="chart-title">📈 Daily Registration Trend <span class="drill-icon">👆 tap to drill</span></div>
+            <canvas id="trendChart" width="300" height="180"></canvas>
+        </div>
+
+        <div class="chart-container" onclick="drillComparisonChart()">
+            <div class="chart-title">🔄 Registration vs Distribution <span class="drill-icon">👆 tap to drill</span></div>
+            <canvas id="comparisonChart" width="300" height="180"></canvas>
+        </div>
+
+        <button class="back-btn" onclick="window.location.href='index.html'">🏠 Back to Dashboard Menu</button>
+    </main>
+
+    <footer class="app-footer">
+        <div class="footer-text">ICF-SL@2027 | Powered by Zainab</div>
+    </footer>
+</div>
+
+<div id="drillModal" class="drill-modal">
+    <div class="drill-content">
+        <div class="drill-header">
+            <div class="drill-title" id="drillTitle">Details</div>
+            <button class="drill-close" onclick="closeDrill()">&times;</button>
+        </div>
+        <div id="drillBody"></div>
+    </div>
+</div>
+
+<script>
+    // Load data from localStorage
+    function loadHouseholds() {
+        const stored = localStorage.getItem('hh_records');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+        // Enhanced demo data with PHU and Distribution Point
+        return [
+            { id: 1, date: "2024-06-10", district: "Western Area Urban", chiefdom: "Central Freetown", phu: "PHU Central Clinic", community: "Central Community", distributionPoint: "DP Central Market", status: "distributed", nets: 2, surname: "Koroma", firstname: "John" },
+            { id: 2, date: "2024-06-11", district: "Western Area Urban", chiefdom: "Central Freetown", phu: "PHU Central Clinic", community: "Brookfields", distributionPoint: "DP Brookfields Junction", status: "distributed", nets: 3, surname: "Sesay", firstname: "Fatmata" },
+            { id: 3, date: "2024-06-12", district: "Bo", chiefdom: "Bo Central", phu: "PHU Bo Government Hospital", community: "Bo City Center", distributionPoint: "DP Bo Main Market", status: "pending", nets: 2, surname: "Bangura", firstname: "Mohamed" },
+            { id: 4, date: "2024-06-12", district: "Kenema", chiefdom: "Kenema City", phu: "PHU Kenema General", community: "Kenema Center", distributionPoint: "DP Kenema Market", status: "pending", nets: 1, surname: "Kamara", firstname: "Zainab" },
+            { id: 5, date: "2024-06-13", district: "Makeni", chiefdom: "Makeni City", phu: "PHU Makeni Regional", community: "Makeni Central", distributionPoint: "DP Makeni Main Market", status: "distributed", nets: 3, surname: "Conteh", firstname: "Aminata" },
+            { id: 6, date: "2024-06-13", district: "Western Area Rural", chiefdom: "Coastal Rural", phu: "PHU Goderich", community: "Goderich", distributionPoint: "DP Goderich Wharf", status: "pending", nets: 2, surname: "Jalloh", firstname: "Ibrahim" },
+            { id: 7, date: "2024-06-14", district: "Bo", chiefdom: "Bo Central", phu: "PHU Bo Government Hospital", community: "New London", distributionPoint: "DP New London Square", status: "distributed", nets: 2, surname: "Sankoh", firstname: "Mariama" },
+            { id: 8, date: "2024-06-14", district: "Western Area Urban", chiefdom: "East Freetown", phu: "PHU Kissy", community: "Kissy", distributionPoint: "DP Kissy Road", status: "pending", nets: 3, surname: "Fofana", firstname: "Alhaji" },
+            { id: 9, date: "2024-06-15", district: "Kenema", chiefdom: "Kenema City", phu: "PHU Kenema General", community: "Dauda Town", distributionPoint: "DP Dauda Junction", status: "synced", nets: 2, surname: "Kargbo", firstname: "Isatu" },
+            { id: 10, date: "2024-06-15", district: "Makeni", chiefdom: "Makeni City", phu: "PHU Makeni Regional", community: "Rokon", distributionPoint: "DP Rokon Depot", status: "synced", nets: 3, surname: "Bangura", firstname: "Sulaiman" },
+            { id: 11, date: "2024-06-16", district: "Western Area Urban", chiefdom: "West Freetown", phu: "PHU Aberdeen", community: "Aberdeen", distributionPoint: "DP Aberdeen Bridge", status: "pending", nets: 1, surname: "Kamara", firstname: "Mariama" },
+            { id: 12, date: "2024-06-16", district: "Bo", chiefdom: "Bo Central", phu: "PHU New London", community: "Gewojama", distributionPoint: "DP Gewojama Market", status: "distributed", nets: 2, surname: "Conteh", firstname: "Ibrahim" }
+        ];
+    }
+
+    const districtMapping = {
+        "Western Area Urban": "W.A. Urban",
+        "Western Area Rural": "W.A. Rural",
+        "Bo": "Bo",
+        "Kenema": "Kenema",
+        "Makeni": "Makeni"
+    };
+
+    function getAllDistricts(households) {
+        const districts = new Set();
+        households.forEach(hh => { if (hh.district) districts.add(hh.district); });
+        return Array.from(districts).sort();
+    }
+
+    function calculateStats(households) {
+        const total = households.length;
+        const distributed = households.filter(h => h.status === 'distributed' || h.status === 'synced').length;
+        const pending = households.filter(h => h.status === 'pending').length;
+        const synced = households.filter(h => h.status === 'synced').length;
+        const totalNets = households.reduce((sum, h) => sum + (h.nets || 0), 0);
+        const netsDistributed = households.filter(h => h.status === 'distributed' || h.status === 'synced').reduce((sum, h) => sum + (h.nets || 0), 0);
+        return { total, distributed, pending, synced, totalNets, netsDistributed };
+    }
+
+    function getDistrictData(households) {
+        const districts = getAllDistricts(households);
+        const registered = {};
+        const distributed = {};
+        districts.forEach(d => {
+            registered[d] = households.filter(h => h.district === d).length;
+            distributed[d] = households.filter(h => h.district === d && (h.status === 'distributed' || h.status === 'synced')).length;
+        });
+        return { districts, registered, distributed };
+    }
+
+    function getDailyTrend(households) {
+        const last7Days = [];
+        const today = new Date();
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(today.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            last7Days.push(dateStr);
+        }
+        const dailyCounts = last7Days.map(date => households.filter(h => h.date === date).length);
+        return { labels: last7Days.map(d => d.slice(5)), counts: dailyCounts };
+    }
+
+    // Drill down helper - get PHU & DP breakdown
+    function getLocationBreakdown(households) {
+        const breakdown = {};
+        households.forEach(hh => {
+            const district = hh.district || 'Unknown';
+            const phu = hh.phu || 'N/A';
+            const dp = hh.distributionPoint || 'N/A';
+            
+            if (!breakdown[district]) breakdown[district] = {};
+            if (!breakdown[district][phu]) breakdown[district][phu] = {};
+            if (!breakdown[district][phu][dp]) {
+                breakdown[district][phu][dp] = { registered: 0, distributed: 0, pending: 0, households: [] };
+            }
+            breakdown[district][phu][dp].registered++;
+            if (hh.status === 'distributed' || hh.status === 'synced') {
+                breakdown[district][phu][dp].distributed++;
+            } else {
+                breakdown[district][phu][dp].pending++;
+            }
+            breakdown[district][phu][dp].households.push(hh);
+        });
+        return breakdown;
+    }
+
+    function openDrill(title, content) {
+        document.getElementById('drillTitle').innerText = title;
+        document.getElementById('drillBody').innerHTML = content;
+        document.getElementById('drillModal').classList.add('active');
+    }
+
+    function closeDrill() {
+        document.getElementById('drillModal').classList.remove('active');
+    }
+
+    // ========== DRILL DOWN FUNCTIONS WITH PHU/DP LEVEL ==========
+    function drillTotalReg() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">All registered households (${stats.total} total)</div>`;
+        
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const totalInDistrict = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.registered, 0), 0);
+            content += `<div style="font-weight:700;color:#0a2b4e;padding:8px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:4px;">${districtMapping[district] || district} (${totalInDistrict})</div>`;
+            
+            Object.keys(districtData).sort().forEach(phu => {
+                const phuData = districtData[phu];
+                const phuTotal = Object.values(phuData).reduce((s, dp) => s + dp.registered, 0);
+                content += `<div class="drill-sub-item"><div class="drill-sub-label">📋 ${phu} (${phuTotal})</div>`;
+                
+                Object.keys(phuData).sort().forEach(dp => {
+                    const dpData = phuData[dp];
+                    const pct = dpData.registered > 0 ? Math.round(dpData.distributed/dpData.registered*100) : 0;
+                    content += `<div class="drill-item" style="padding-left:16px;font-size:0.8rem;">
+                        <span class="label">📍 ${dp}</span>
+                        <span class="value">${dpData.registered} (${pct}% done)</span>
+                    </div>`;
+                });
+                content += `</div>`;
+            });
+        });
+        
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #0a2b4e;margin-top:8px;padding-top:12px;">
+            <span class="label">Total Registered</span><span class="value">${stats.total}</span></div>`;
+        openDrill('📋 Total Registered Details', content);
+    }
+
+    function drillTotalDist() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Distributed households (${stats.distributed} total)</div>`;
+        
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const totalDist = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.distributed, 0), 0);
+            if (totalDist === 0) return;
+            content += `<div style="font-weight:700;color:#22c55e;padding:8px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:4px;">${districtMapping[district] || district} (${totalDist} distributed)</div>`;
+            
+            Object.keys(districtData).sort().forEach(phu => {
+                const phuData = districtData[phu];
+                const phuDist = Object.values(phuData).reduce((s, dp) => s + dp.distributed, 0);
+                if (phuDist === 0) return;
+                content += `<div class="drill-sub-item"><div class="drill-sub-label">📋 ${phu} (${phuDist})</div>`;
+                
+                Object.keys(phuData).sort().forEach(dp => {
+                    const dpData = phuData[dp];
+                    if (dpData.distributed === 0) return;
+                    content += `<div class="drill-item" style="padding-left:16px;font-size:0.8rem;">
+                        <span class="label">📍 ${dp}</span>
+                        <span class="value distributed">${dpData.distributed} / ${dpData.registered}</span>
+                    </div>`;
+                });
+                content += `</div>`;
+            });
+        });
+        
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #22c55e;margin-top:8px;padding-top:12px;">
+            <span class="label">Total Distributed</span><span class="value distributed">${stats.distributed}</span></div>`;
+        openDrill('📦 Total Distributed Details', content);
+    }
+
+    function drillPending() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Pending households (${stats.pending} total)</div>`;
+        
+        if (stats.pending === 0) {
+            content += `<div style="text-align:center;padding:20px;color:#22c55e;">✅ All households have been distributed!</div>`;
+            openDrill('⏳ Pending Distribution Details', content);
+            return;
+        }
+        
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const totalPending = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.pending, 0), 0);
+            if (totalPending === 0) return;
+            content += `<div style="font-weight:700;color:#f97316;padding:8px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:4px;">${districtMapping[district] || district} (${totalPending} pending)</div>`;
+            
+            Object.keys(districtData).sort().forEach(phu => {
+                const phuData = districtData[phu];
+                const phuPending = Object.values(phuData).reduce((s, dp) => s + dp.pending, 0);
+                if (phuPending === 0) return;
+                content += `<div class="drill-sub-item"><div class="drill-sub-label">📋 ${phu} (${phuPending})</div>`;
+                
+                Object.keys(phuData).sort().forEach(dp => {
+                    const dpData = phuData[dp];
+                    if (dpData.pending === 0) return;
+                    content += `<div class="drill-item" style="padding-left:16px;font-size:0.8rem;">
+                        <span class="label">📍 ${dp}</span>
+                        <span class="value pending">${dpData.pending}</span>
+                    </div>`;
+                });
+                content += `</div>`;
+            });
+        });
+        
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #f97316;margin-top:8px;padding-top:12px;">
+            <span class="label">Total Pending</span><span class="value pending">${stats.pending}</span></div>`;
+        openDrill('⏳ Pending Distribution Details', content);
+    }
+
+    function drillNets() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Nets distributed: ${stats.netsDistributed}</div>`;
+        
+        // Distribution by DP
+        content += `<div style="font-weight:700;color:#0a2b4e;padding:8px 0 4px 0;">📊 Nets by Distribution Point</div>`;
+        const dpNets = {};
+        households.filter(h => h.status === 'distributed' || h.status === 'synced').forEach(h => {
+            const key = h.distributionPoint || 'Unknown DP';
+            dpNets[key] = (dpNets[key] || 0) + (h.nets || 0);
+        });
+        Object.keys(dpNets).sort().forEach(dp => {
+            content += `<div class="drill-item"><span class="label">📍 ${dp}</span><span class="value">${dpNets[dp]} nets</span></div>`;
+        });
+        
+        // Top households
+        const sorted = [...households.filter(h => h.status === 'distributed' || h.status === 'synced')]
+            .sort((a, b) => (b.nets || 0) - (a.nets || 0));
+        content += `<div style="font-weight:700;color:#0a2b4e;padding:12px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:8px;">🏠 Top Households</div>`;
+        sorted.slice(0, 5).forEach(h => {
+            content += `<div class="drill-item"><span class="label">${h.surname} ${h.firstname}</span><span class="value">${h.nets || 0} nets</span></div>`;
+        });
+        
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #0a2b4e;margin-top:8px;padding-top:12px;">
+            <span class="label">Total Nets Distributed</span><span class="value">${stats.netsDistributed}</span></div>`;
+        openDrill('🦟 Nets Distribution Details', content);
+    }
+
+    function drillSync() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const syncRate = stats.total > 0 ? (stats.synced / stats.total * 100).toFixed(1) : 0;
+        let content = `<div class="drill-subtitle">Sync Rate: ${syncRate}% (${stats.synced} synced / ${stats.total} total)</div>`;
+        
+        content += `<div class="drill-item"><span class="label">✅ Synced</span><span class="value synced">${stats.synced}</span></div>`;
+        content += `<div class="drill-item"><span class="label">🟢 Distributed (not synced)</span><span class="value distributed">${households.filter(h => h.status === 'distributed').length}</span></div>`;
+        content += `<div class="drill-item"><span class="label">⏳ Pending</span><span class="value pending">${stats.pending}</span></div>`;
+        
+        const syncStatus = households.filter(h => h.status === 'synced');
+        if (syncStatus.length > 0) {
+            content += `<div style="font-weight:700;color:#0a2b4e;padding:12px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:8px;">✅ Recently Synced</div>`;
+            syncStatus.slice(0, 5).forEach(h => {
+                content += `<div class="drill-item"><span class="label">${h.surname} ${h.firstname} (${h.distributionPoint})</span><span class="value synced">${h.date || 'N/A'}</span></div>`;
+            });
+        }
+        openDrill('🔄 Syncing Details', content);
+    }
+
+    function drillProgress() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const progressPercent = stats.total > 0 ? (stats.distributed / stats.total * 100).toFixed(1) : 0;
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Campaign Progress: ${progressPercent}% complete</div>`;
+        
+        content += `<div class="drill-item"><span class="label">✅ Distributed</span><span class="value distributed">${stats.distributed} (${progressPercent}%)</span></div>`;
+        content += `<div class="drill-item"><span class="label">⏳ Pending</span><span class="value pending">${stats.pending} (${(100 - parseFloat(progressPercent)).toFixed(1)}%)</span></div>`;
+        content += `<div class="drill-item"><span class="label">🔄 Synced</span><span class="value synced">${stats.synced}</span></div>`;
+        
+        // Progress by District
+        content += `<div style="font-weight:700;color:#0a2b4e;padding:12px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:8px;">📍 Progress by District</div>`;
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const total = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.registered, 0), 0);
+            const distDist = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.distributed, 0), 0);
+            const pct = total > 0 ? Math.round(distDist/total*100) : 0;
+            content += `<div class="drill-item"><span class="label">${districtMapping[district] || district}</span><span class="value">${distDist}/${total} (${pct}%)</span></div>`;
+        });
+        
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #0a2b4e;margin-top:8px;padding-top:12px;">
+            <span class="label">Total Households</span><span class="value">${stats.total}</span></div>`;
+        openDrill('📊 Campaign Progress Details', content);
+    }
+
+    function drillDistrictChart() {
+        const households = loadHouseholds();
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Complete Location Breakdown (District → PHU → DP)</div>`;
+        
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const total = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.registered, 0), 0);
+            const distDist = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.distributed, 0), 0);
+            const pct = total > 0 ? Math.round(distDist/total*100) : 0;
+            content += `<div style="font-weight:700;color:#0a2b4e;padding:10px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:6px;">
+                📍 ${districtMapping[district] || district} (${distDist}/${total} - ${pct}%)
+            </div>`;
+            
+            Object.keys(districtData).sort().forEach(phu => {
+                const phuData = districtData[phu];
+                const phuTotal = Object.values(phuData).reduce((s, dp) => s + dp.registered, 0);
+                const phuDist = Object.values(phuData).reduce((s, dp) => s + dp.distributed, 0);
+                const phuPct = phuTotal > 0 ? Math.round(phuDist/phuTotal*100) : 0;
+                content += `<div class="drill-sub-item"><div class="drill-sub-label">🏥 ${phu} (${phuDist}/${phuTotal} - ${phuPct}%)</div>`;
+                
+                Object.keys(phuData).sort().forEach(dp => {
+                    const dpData = phuData[dp];
+                    const dpPct = dpData.registered > 0 ? Math.round(dpData.distributed/dpData.registered*100) : 0;
+                    content += `<div class="drill-item" style="padding-left:16px;font-size:0.8rem;">
+                        <span class="label">📍 ${dp}</span>
+                        <span class="value ${dpPct === 100 ? 'distributed' : dpPct > 0 ? '' : 'pending'}">
+                            ${dpData.distributed}/${dpData.registered} (${dpPct}%)
+                        </span>
+                    </div>`;
+                });
+                content += `</div>`;
+            });
+        });
+        
+        openDrill('📍 Complete Location Breakdown', content);
+    }
+
+    function drillTrendChart() {
+        const households = loadHouseholds();
+        const trendData = getDailyTrend(households);
+        let content = `<div class="drill-subtitle">Daily Registration Trend (Last 7 days)</div>`;
+        
+        trendData.labels.forEach((label, i) => {
+            const count = trendData.counts[i] || 0;
+            const dayHouseholds = households.filter(h => h.date === getDateForLabel(i));
+            content += `<div class="drill-item" style="flex-wrap:wrap;">
+                <span class="label">${label}</span>
+                <span class="value">${count} registrations</span>
+            </div>`;
+            // Show households for that day
+            if (dayHouseholds.length > 0) {
+                const names = dayHouseholds.map(h => `${h.surname} ${h.firstname}`).join(', ');
+                content += `<div style="font-size:0.6rem;color:#64748b;padding-left:16px;margin-bottom:4px;">${names}</div>`;
+            }
+        });
+        
+        const total = trendData.counts.reduce((sum, c) => sum + c, 0);
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #0a2b4e;margin-top:8px;padding-top:12px;">
+            <span class="label">Total (7 days)</span><span class="value">${total}</span></div>`;
+        openDrill('📈 Registration Trend Details', content);
+    }
+
+    function getDateForLabel(index) {
+        const today = new Date();
+        const date = new Date();
+        date.setDate(today.getDate() - (6 - index));
+        return date.toISOString().split('T')[0];
+    }
+
+    function drillComparisonChart() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const breakdown = getLocationBreakdown(households);
+        let content = `<div class="drill-subtitle">Registration vs Distribution Overview</div>`;
+        
+        content += `<div class="drill-item"><span class="label">📋 Total Registered</span><span class="value">${stats.total}</span></div>`;
+        content += `<div class="drill-item"><span class="label">📦 Total Distributed</span><span class="value distributed">${stats.distributed}</span></div>`;
+        content += `<div class="drill-item"><span class="label">⏳ Pending</span><span class="value pending">${stats.pending}</span></div>`;
+        content += `<div class="drill-item"><span class="label">🦟 Nets Distributed</span><span class="value">${stats.netsDistributed}</span></div>`;
+        
+        // Summary by district with DP count
+        content += `<div style="font-weight:700;color:#0a2b4e;padding:12px 0 4px 0;border-top:1px solid #e2e8f0;margin-top:8px;">📍 District Summary</div>`;
+        Object.keys(breakdown).sort().forEach(district => {
+            const districtData = breakdown[district];
+            const total = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.registered, 0), 0);
+            const distDist = Object.values(districtData).reduce((sum, phu) => sum + Object.values(phu).reduce((s, dp) => s + dp.distributed, 0), 0);
+            const dpCount = Object.values(districtData).reduce((sum, phu) => sum + Object.keys(phu).length, 0);
+            const pct = total > 0 ? Math.round(distDist/total*100) : 0;
+            content += `<div class="drill-item"><span class="label">${districtMapping[district] || district}</span>
+                <span class="value">${distDist}/${total} (${pct}%) · ${dpCount} DPs</span></div>`;
+        });
+        
+        const completionRate = stats.total > 0 ? (stats.distributed / stats.total * 100).toFixed(1) : 0;
+        content += `<div class="drill-item" style="font-weight:700;border-top:2px solid #0a2b4e;margin-top:8px;padding-top:12px;">
+            <span class="label">Completion Rate</span><span class="value">${completionRate}%</span></div>`;
+        openDrill('🔄 Overview Details', content);
+    }
+
+    // Chart instances
+    let districtChart, trendChart, comparisonChart;
+
+    function destroyCharts() {
+        if (districtChart) districtChart.destroy();
+        if (trendChart) trendChart.destroy();
+        if (comparisonChart) comparisonChart.destroy();
+    }
+
+    function updateDashboard() {
+        const households = loadHouseholds();
+        const stats = calculateStats(households);
+        const progressPercent = stats.total > 0 ? (stats.distributed / stats.total * 100).toFixed(1) : 0;
+        
+        const syncRate = stats.total > 0 ? (stats.synced / stats.total * 100).toFixed(1) : 0;
+        const syncPercentage = stats.total > 0 ? (stats.synced / stats.total * 100) : 0;
+        
+        document.getElementById('totalReg').innerText = stats.total;
+        document.getElementById('totalDist').innerText = stats.distributed;
+        document.getElementById('pendingDist').innerText = stats.pending;
+        document.getElementById('totalNets').innerText = stats.netsDistributed;
+        
+        document.getElementById('syncRate').innerText = `${syncRate}%`;
+        document.getElementById('syncProgressBar').style.width = `${syncPercentage}%`;
+        
+        const syncStatus = document.getElementById('syncStatus');
+        const syncDetails = document.getElementById('syncDetails');
+        if (stats.total === 0) {
+            syncStatus.innerText = 'No records to sync';
+            syncDetails.innerText = '0 synced / 0 pending';
+        } else if (syncPercentage === 100) {
+            syncStatus.innerText = '✅ All records synced!';
+            syncDetails.innerText = `${stats.synced} synced / ${stats.pending} pending`;
+        } else if (syncPercentage > 50) {
+            syncStatus.innerText = '🔄 Syncing in progress...';
+            syncDetails.innerText = `${stats.synced} synced / ${stats.pending} pending`;
+        } else {
+            syncStatus.innerText = '⚠️ Low sync rate - pending records';
+            syncDetails.innerText = `${stats.synced} synced / ${stats.pending} pending`;
+        }
+        
+        const progressBar = document.getElementById('progressBar');
+        progressBar.style.width = `${progressPercent}%`;
+        progressBar.innerText = `${progressPercent}%`;
+        document.getElementById('progressText').innerHTML = `${stats.distributed} out of ${stats.total} households have received ITNs (${progressPercent}%)`;
+        
+        const districtData = getDistrictData(households);
+        const districtLabels = districtData.districts.map(d => districtMapping[d] || d);
+        
+        destroyCharts();
+        
+        const ctx1 = document.getElementById('districtChart').getContext('2d');
+        districtChart = new Chart(ctx1, {
+            type: 'bar',
+            data: {
+                labels: districtLabels,
+                datasets: [
+                    { label: 'Registered', data: districtData.registered, backgroundColor: '#0a2b4e', borderRadius: 8 },
+                    { label: 'Distributed', data: districtData.distributed, backgroundColor: '#22c55e', borderRadius: 8 }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' } }, x: { ticks: { font: { size: 9 } } } }
+            }
+        });
+        
+        const trendData = getDailyTrend(households);
+        const ctx2 = document.getElementById('trendChart').getContext('2d');
+        trendChart = new Chart(ctx2, {
+            type: 'line',
+            data: {
+                labels: trendData.labels,
+                datasets: [{
+                    label: 'Registrations',
+                    data: trendData.counts,
+                    borderColor: '#0a2b4e',
+                    backgroundColor: 'rgba(10, 43, 78, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#0a2b4e',
+                    pointRadius: 4
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: { legend: { position: 'bottom', labels: { font: { size: 10 } } } },
+                scales: { y: { beginAtZero: true, grid: { color: '#e2e8f0' }, ticks: { stepSize: 1 } } }
+            }
+        });
+        
+        const ctx3 = document.getElementById('comparisonChart').getContext('2d');
+        comparisonChart = new Chart(ctx3, {
+            type: 'doughnut',
+            data: {
+                labels: ['Distributed', 'Pending'],
+                datasets: [{
+                    data: [stats.distributed, stats.pending],
+                    backgroundColor: ['#22c55e', '#f97316'],
+                    borderWidth: 0,
+                    borderRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { position: 'bottom', labels: { font: { size: 10 } } },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw} households (${((ctx.raw / stats.total) * 100).toFixed(1)}%)` } }
+                }
+            }
+        });
+    }
+
+    document.getElementById('drillModal').addEventListener('click', function(e) {
+        if (e.target === this) closeDrill();
+    });
+
+    updateDashboard();
+    setInterval(updateDashboard, 5000);
+</script>
+</body>
+</html>
