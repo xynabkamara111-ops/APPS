@@ -43,26 +43,11 @@
       background-color: #0a2b4e;
       flex-shrink: 0;
       width: 100%;
-      padding: 10px 12px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .header-left, .header-right {
-      flex-shrink: 0;
-      width: 44px;
-      height: 44px;
+      padding: 16px 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    .header-left img, .header-right img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
+      gap: 8px;
     }
 
     .header-center {
@@ -72,27 +57,30 @@
       align-items: center;
       justify-content: center;
       text-align: center;
-      gap: 3px;
+      gap: 4px;
     }
 
     .ministry-text {
       color: white;
       font-weight: 700;
-      font-size: 0.72rem;
-      letter-spacing: 0.3px;
+      font-size: 1.2rem;
+      letter-spacing: 0.5px;
     }
 
     .program-text {
       color: white;
       font-weight: 600;
-      font-size: 0.65rem;
+      font-size: 1rem;
       opacity: 0.9;
+      letter-spacing: 0.3px;
     }
 
     .campaign-text {
       color: #ffd966;
       font-weight: 800;
-      font-size: 0.68rem;
+      font-size: 1rem;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
     }
 
     .app-body {
@@ -115,11 +103,6 @@
     .logo-area {
       text-align: center;
       margin-bottom: 32px;
-    }
-
-    .logo-icon {
-      font-size: 48px;
-      margin-bottom: 8px;
     }
 
     .welcome-text {
@@ -212,6 +195,16 @@
       margin-bottom: 16px;
     }
 
+    /* When only one card is shown, make it full width and full height */
+    .cards-grid:has(.card:only-child) {
+      grid-template-columns: 1fr;
+    }
+
+    .cards-grid:has(.card:only-child) .card {
+      min-height: 400px;
+      height: 100%;
+    }
+
     .card {
       background-color: #0a2b4e;
       border-radius: 24px;
@@ -235,7 +228,7 @@
     }
 
     .card-title {
-      font-size: 1rem;
+      font-size: 1.8rem;
       font-weight: 800;
       color: white;
       letter-spacing: 0.5px;
@@ -244,14 +237,22 @@
       word-break: keep-all;
       text-align: center;
       font-family: inherit;
-      padding: 12px 8px;
+      padding: 20px 16px;
       width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     @media (min-width: 360px) {
       .card-title {
-        font-size: 1.05rem;
+        font-size: 2rem;
       }
+    }
+
+    /* When only one card, increase title size further */
+    .cards-grid:has(.card:only-child) .card-title {
+      font-size: 2.5rem;
     }
 
     @media (hover: hover) {
@@ -302,24 +303,27 @@
       background-color: #0a2b4e;
       flex-shrink: 0;
       width: 100%;
-      padding: 10px 16px;
+      padding: 20px 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 8px;
       text-align: center;
     }
 
     .footer-copyright {
-      color: rgba(255, 255, 255, 0.8);
-      font-size: 0.65rem;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
     }
 
     .footer-powered {
       color: #ffd966;
-      font-size: 0.65rem;
-      font-weight: 600;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
     }
 
     @media (max-width: 420px) {
@@ -336,25 +340,36 @@
         gap: 12px;
       }
       .card-title {
-        font-size: 0.9rem;
-        padding: 8px 6px;
+        font-size: 1.5rem;
+        padding: 12px 8px;
       }
-      .header-left, .header-right {
-        width: 36px;
-        height: 36px;
+      .cards-grid:has(.card:only-child) .card-title {
+        font-size: 2rem;
       }
       .ministry-text {
-        font-size: 0.65rem;
+        font-size: 1rem;
       }
       .program-text {
-        font-size: 0.58rem;
+        font-size: 0.85rem;
       }
       .campaign-text {
-        font-size: 0.6rem;
+        font-size: 0.85rem;
+      }
+      .app-header {
+        padding: 12px 12px;
       }
       .logout-btn {
         padding: 8px 16px;
         font-size: 0.7rem;
+      }
+      .app-footer {
+        padding: 16px 12px;
+      }
+      .footer-copyright {
+        font-size: 0.75rem;
+      }
+      .footer-powered {
+        font-size: 0.75rem;
       }
     }
   </style>
@@ -362,20 +377,10 @@
 <body>
 <div class="phone">
   <header class="app-header">
-    <div class="header-left">
-      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
-           alt="Government of Sierra Leone Logo"
-           onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
-    </div>
     <div class="header-center">
       <div class="ministry-text">Ministry of Health</div>
       <div class="program-text">National Malaria Control Program</div>
       <div class="campaign-text">ITN Mass Campaign 2027</div>
-    </div>
-    <div class="header-right">
-      <img src="https://upload.wikimedia.org/wikipedia/en/thumb/6/64/Coat_of_arms_of_Sierra_Leone.svg/1200px-Coat_of_arms_of_Sierra_Leone.svg.png"
-           alt="Government of Sierra Leone Logo"
-           onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'%3E%3Crect width=\'100\' height=\'100\' fill=\'%230a2b4e\'/%3E%3Ctext x=\'50\' y=\'55\' font-size=\'12\' text-anchor=\'middle\' fill=\'white\'%3ESL%3C/text%3E%3C/svg%3E'">
     </div>
   </header>
 
@@ -383,7 +388,6 @@
     <!-- Login Section -->
     <div id="loginSection" class="login-container">
       <div class="logo-area">
-        <div class="logo-icon">🦟</div>
         <div class="welcome-text">Welcome Back</div>
         <div class="sub-text">Sign in to continue</div>
       </div>
